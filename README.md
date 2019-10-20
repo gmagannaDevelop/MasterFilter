@@ -12,11 +12,16 @@ Fundamentos de procesamiento digital de imágenes : Funciones de filtrado en fre
 5. Reporte los siguientes resultados:
     (1 punto) A la imagen que se llama mama.tiff
   
-    Filtro pasa bajos ideal con wc=64,
-    Filtro pasa bajos butt con wc=64, orden=2
-    Filtro pasa bajos gauss con wc=64,
-    Filtro pasa altos gauss con wc=64,
-    Filtro pasa bandas gauss con wc1=54, wc2=74,
-    Filtro rechazo de bandas gauss con wc1=54, wc2=74,
+      Filtro pasa bajos ideal con wc=64,
 
-(2 puntos) A las figuras FigP0405(HeadCT_corrupted).tif y a RadiografiaRuidoCoherente.jpg intente quitar el ruido coherente que se observa, detalle el procedimiento que realizó y los resultados que obtuvo
+      Filtro pasa bajos butt con wc=64, orden=2
+
+      Filtro pasa bajos gauss con wc=64,
+
+      Filtro pasa altos gauss con wc=64,
+
+      Filtro pasa bandas gauss con wc1=54, wc2=74,
+
+      Filtro rechazo de bandas gauss con wc1=54, wc2=74,
+
+6. (2 puntos) A las figuras FigP0405(HeadCT_corrupted).tif y a RadiografiaRuidoCoherente.jpg intente quitar el ruido coherente que se observa, detalle el procedimiento que realizó y los resultados que obtuvo
