@@ -36,7 +36,7 @@ import skimage.filters
 plt.rcParams['figure.figsize'] = (10, 10)
 
 
-# In[168]:
+# In[190]:
 
 
 def img_fft(image: np.ndarray, shift: bool = True) -> np.ndarray:
@@ -220,6 +220,7 @@ def kernel_gaussiano(
     image: np.ndarray, 
     sigma: int = 15, 
      kind: str = 'low',
+        w: int = 10,
       wc1: int =  None, 
       wc2: int =  None,
 ) -> np.ndarray:
@@ -241,7 +242,7 @@ def kernel_gaussiano(
     if bandas:
         assert wc1 < wc2, f'Valores wc1:{wc1}, wc2:{wc2} no cumplen wc1 < wc2.'
         sigma = np.ceil((wc2 + wc1) / 2.0)
-        w     = np.ceil(wc2 - sigma)
+        w     = np.ceil(2.0 * (wc2 - sigma))
     
     U, V = fourier_meshgrid(image)
     D = fourier_distance(U, V)
@@ -253,10 +254,15 @@ def kernel_gaussiano(
         H = np.exp( (-1.0 * D) / (2.0 * sigma**2) ) 
         if 'high' in kind:
             H = 1.0 - H
-    elif bandas:
+    else:
         # Además de la bandera, se requiere verificar que wc1, wc2 sean distancias de
         # corte válidas para el diseño del filtro.
         # Filtros pasa-bandas y rechazo de bandas.
+        bandas = all(map(lambda x: x if x != 0 else True, [wc1, wc2]))
+        if bandas:
+            assert wc1 < wc2, f'Valores wc1:{wc1}, wc2:{wc2} no cumplen wc1 < wc2.'
+            sigma = np.ceil((wc2 + wc1) / 2.0)
+            w     = np.ceil(wc2 - sigma)
         H = np.exp(
             -1.0 * np.power(
                 (D - sigma**2) / (w * np.sqrt(D)), 2
@@ -287,11 +293,11 @@ def muestra_kernels_gaussianos(
     plt.title(f'Pasa altos : sigma = {sigma}')
     
     plt.subplot(2, 2, 3)
-    plt.imshow(kernel_gaussiano(_dummy, kind='bandstop'), cmap='gray')
+    plt.imshow(kernel_gaussiano(_dummy, kind='bandstop', wc1=wc1, wc2=wc2), cmap='gray')
     plt.title(f'Rechazo de bandas : wc1 = {wc1}, wc2 = {wc2}')
     
     plt.subplot(2, 2, 4)
-    plt.imshow(kernel_gaussiano(_dummy, kind='bandpass'), cmap='gray')
+    plt.imshow(kernel_gaussiano(_dummy, kind='bandpass', wc1=wc1, wc2=wc2), cmap='gray')
     plt.title(f'Pasa bandas, wc1 = {wc1}, wc2 = {wc2}')
     
     
@@ -379,7 +385,7 @@ fft2(I)
 fft_viz(I)
 
 
-# In[169]:
+# In[174]:
 
 
 muestra_kernels_gaussianos()
@@ -389,6 +395,13 @@ muestra_kernels_gaussianos()
 
 
 #plt.imshow(FiltraGaussiana(I, sigma=3), cmap='gray')
+
+
+# In[196]:
+
+
+_tmp = kernel_gaussiano(I, kind='bandpass', wc1=52, wc2=72)
+plt.imshow(_tmp, cmap='gray')
 
 
 # In[ ]:
