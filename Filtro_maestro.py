@@ -7,10 +7,10 @@
 # ### Profesor : Dr. Arturo González Vega
 # ### Alumno : Gustavo Magaña López
 
-# In[2]:
+# In[9]:
 
 
-from typing import Tuple
+from typing import Tuple, List
 
 import numpy as np
 import scipy.fftpack as F
@@ -28,7 +28,7 @@ import skimage.morphology
 import skimage.filters
 
 
-# In[ ]:
+# In[52]:
 
 
 def img_fft(image: np.ndarray, shift: bool = True) -> np.ndarray:
@@ -59,27 +59,85 @@ def fft_viz(image: np.ndarray, shift: bool = True) -> None:
     """
         Ver la transformada de fourier de una imagen.
     """
+    plt.figure()
     plt.imshow(img_fft(image, shift=shift), cmap='gray')
+    plt.show()
 ##
 
-def pre_fft_processing(image: np.ndarray) -> np.ndarray:
+def pre_fft_processing(
+    image: np.ndarray,
+      top: int = None,
+   bottom: int = None, 
+     left: int = None,
+    right: int = None,
+    borderType: int = None,
+) -> np.ndarray:
     """
+        Esta función lleva a cabo el proceso de 'padding', necesario antes 
+        de aplicar un filtrado en el espacio frecuencial (de Fourier).
+        
+        Básicamente un wrapper para :
+            cv2.copyMakeBorder( image, top, bottom, left, right, borderType)
+            
+        Donde el tipo de frontera (borderType) puede ser alguno de los siguientes :
+            cv2.BORDER_CONSTANT
+            cv2.BORDER_REFLECT
+            cv2.BORDER_REFLECT_101
+            cv2.BORDER_DEFAULT
+            cv2.BORDER_REPLICATE
+            cv2.BORDER_WRAP
+        
+        Si faltan uno o más de los parámetros necesarios para llamar cv2.copyMakeBorder(), 
+        se implementará un 'padding' por defecto en función de los valores calculados por
+        cv2.getOptimalDFTSize().
+        
+    ##  Parámetros :
+                image : Una imagen en blanco y negro, es decir un arreglo bidimensional de numpy.
+                  top : Número entero representando el número de pixeles que se agegarán en el margen superior.
+               bottom : idem. para el margen inferior. 
+                 left : idem. para el margen izquierdo.
+                right : idem. para el margen derecho.
+           borderType : Alguno de los mencionados anteriormente en el Docstring.
+
+
+                
+    ##  Regresa :
+                nimg  : imagen con 'padding'
     """
-    
-    row, cols = image.shape
-    nrows, ncols = list(map(cv2.getOptimalDFTSize, image.shape))
-    right = ncols - cols
-    bottom = nrows - rows
-    bordertype = cv2.BORDER_CONSTANT #just to avoid line breakup in PDF file
-    nimg = cv2.copyMakeBorder(image,0,bottom,0,right,bordertype, value = 0)
+    override = all(map(lambda x: x if x != 0 else True, [top, bottom, left, right, borderType]))
+    if override:
+        nimg = cv2.copyMakeBorder(image, top, bottom, left, right, bordertype)
+    else:
+        row, cols = image.shape
+        nrows, ncols = list(map(cv2.getOptimalDFTSize, image.shape))
+        right = ncols - cols
+        bottom = nrows - rows
+        bordertype = cv2.BORDER_CONSTANT #just to avoid line breakup in PDF file
+        nimg = cv2.copyMakeBorder(image,0,bottom,0,right,bordertype, value = 0)
     
     return nimg
 ##
 
-def fft2(image: np.ndarray):
+def fft2(
+    image: np.ndarray,       
+      top: int = None,
+   bottom: int = None, 
+     left: int = None,
+    right: int = None,
+    borderType: int = None,
+) -> np.ndarray:
     """
+    
+    Execute:
+        x = pre_fft_processing(image, top=top, bottom=bottom, left=left, right=right, borderType=borderType)
+        return cv2.dft(np.float32(x),flags=cv2.DFT_COMPLEX_OUTPUT)
+        
+    Call the cv2's dft, which is supposed to be considerably faster than numpy's implementation.
+
+    See help(pre_fft_processing) for futher details on the preprocessing stage.
+    
     """
-    nimg = pre_fft_processing(image)
+    nimg = pre_fft_processing(image, top=top, bottom=bottom, left=left, right=right, borderType=borderType)
     dft2 = cv2.dft(np.float32(nimg),flags=cv2.DFT_COMPLEX_OUTPUT)
     
     return dft2
@@ -87,14 +145,25 @@ def fft2(image: np.ndarray):
 
 def ImPotencia(image: np.ndarray) -> float:
     """
-    Calcula la potencia de acuerdo al teorema de Parseval.
+        Calcula la potencia de acuerdo al teorema de Parseval.
     """
     _F = np.fft.fft2(image)
     return np.sum(np.abs(_F)**2) / np.prod(_F.shape)
 ##
 
-def fourier_meshgrid(image: np.ndarray):
+def fourier_meshgrid(image: np.ndarray) -> Tuple[np.ndarray]:
     """
+        Genera los arreglos bidimensionales U y V necesarios para poder hacer tanto
+        filtrado en frecuencias como la visualización de imágenes en forma de superficies.
+        Esto se hace mapeando las intensidades a los valores que tomará la función en el eje
+        Z, dados los valores de X y Y que son las coordenadas de los pixeles.
+        
+    
+    Parámetros :
+        imagen : Arreglo bidimensional de numpy (numpy.ndarray), es decir una imagen.
+        
+    Regresa :
+        (U, V) : Tuple contieniendo dos arreglos bidimensionales de numpy (numpy.ndarray)
     """
     M, N = image.shape
     u, v = list(map(lambda x: np.arange(0, x), image.shape))
@@ -108,6 +177,27 @@ def fourier_meshgrid(image: np.ndarray):
 
 def fourier_distance(U: np.ndarray, V: np.ndarray, centered: bool = True, squared: bool = True) -> np.ndarray:
     """
+        Calcula la distancia euclidiana de los puntos de una malla (meshgrid), respecto al centro.
+        Por defecto desplaza el centro (distancia 0) al centro de la matriz.
+        Asimismo devuelve la distancia al cuadrado puesto que en ocaciones dicho cálculo se hace después
+        y calcular la raíz y después elevar al cuadrado sería sólo perder tiempo de cómputo.
+        
+    Parámetros :
+    
+                U : Arreglo bidimensional de numpy (numpy.ndarray). 
+                V : Idem.
+         centered : Booleano indicando si se desea la distancia centrada, 
+                    es decir ejecutar np.fft.fftshift(Distancia) una vez calculada
+                    la matriz de distancias. 
+                        True por defecto.
+                        
+          squared : Booleano indicando si se desea la distancia al cuadrado 
+                    o la distancia euclidiana clásica.
+                        True por defecto.
+    
+    Regresa :
+               _d : Matriz con las distancias euclidianas, 
+                    de cada coordenada respecto al centro.
     """
     _d = U**2 + V**2
     if not squared:
@@ -116,6 +206,7 @@ def fourier_distance(U: np.ndarray, V: np.ndarray, centered: bool = True, square
         _d = np.fft.fftshift(_d)
     
     return _d
+##
     
 def kernel_gaussiano(image: np.ndarray, sigma: float, kind: str = 'low') -> np.ndarray:
     """
@@ -160,5 +251,92 @@ def filtro_disco(image: np.ndarray, radius: int = 5) -> np.ndarray:
     _circle = skimage.morphology.disk(radius)
     _filtered = skimage.filters.rank.mean(image, selem=_circle)
     return _filtered
-    
+##
+
+
+# In[44]:
+
+
+#help(cv2.copyMakeBorder)
+
+
+# In[51]:
+
+
+x = fourier_meshgrid(I)
+type(x)
+
+
+# In[ ]:
+
+
+"""
+cv2.BORDER_CONSTANT
+            cv2.BORDER_REFLECT
+            cv2.BORDER_REFLECT_101
+            cv2.BORDER_DEFAULT
+            cv2.BORDER_REPLICATE
+            cv2.BORDER_WRAP
+"""
+
+
+# In[5]:
+
+
+I = img.imread('imagenes/mama.tif')
+
+
+# In[28]:
+
+
+plt.imshow(cv2.copyMakeBorder(I, 0, 0, 0, 0, borderType=cv2.BORDER_CONSTANT))
+
+
+# In[26]:
+
+
+if filter(lambda x: False if x is None else True, [True, None, cv2.BORDER_CONSTANT]):
+    print('Test passed')
+
+
+# In[19]:
+
+
+cv2.BORDER_CONSTANT
+
+
+# In[27]:
+
+
+help(filter)
+
+
+# In[33]:
+
+
+all( [4, 5, 0])
+
+
+# In[34]:
+
+
+[4, 5, 0].replace(0, 5)
+
+
+# In[42]:
+
+
+all(map(lambda x: x if x != 0 else True, [1, 2, 0]))
+
+
+# In[41]:
+
+
+cv2.BORDER_REFLECT101
+
+
+# In[ ]:
+
+
+
 
