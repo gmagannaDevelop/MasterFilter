@@ -28,7 +28,13 @@ import skimage.morphology
 import skimage.filters
 
 
-# In[60]:
+# In[123]:
+
+
+plt.rcParams['figure.figsize'] = (10, 10)
+
+
+# In[115]:
 
 
 def img_fft(image: np.ndarray, shift: bool = True) -> np.ndarray:
@@ -208,32 +214,68 @@ def fourier_distance(U: np.ndarray, V: np.ndarray, centered: bool = True, square
     return _d
 ##
     
-def kernel_gaussiano(image: np.ndarray, sigma: float, form: str = 'low') -> np.ndarray:
+def kernel_gaussiano(
+    image: np.ndarray, 
+    sigma: int = 15, 
+     kind: str = 'low',
+      wc1: int =  None, 
+      wc2: int =  None,
+) -> np.ndarray:
     """
         Calcula un kernel gaussiano para una imagen dada.
     """
+    
+    _kinds = [
+        'low', 'high', 'lowpass', 'highpass', 
+        'low pass', 'high pass',
+        'bandpass', 'bandstop', 
+        'band pass', 'band stop'
+    ]
+    kind = kind.lower()
+    assert kind in _kinds, f'Tipo de filtro inválido.\n Tipos disponibles son : {_kinds}'
+    assert sigma > 0, f'Sigma debe ser positivo. Véase la definición de un filtro Gaussiano.'
+    
+    bandas = all(map(lambda x: x if x != 0 else True, [wc1, wc2]))
+    if bandas:
+        assert wc1 < wc2, f'Valores wc1:{wc1}, wc2:{wc2} no cumplen wc1 < wc2.'
+        sigma = np.ceil((wc2 + wc1) / 2.0)
+        w     = np.ceil(wc2 - sigma)
+    
     U, V = fourier_meshgrid(image)
     D = fourier_distance(U, V)
+    # ^^^ Esta D son distancias al cuadrado, véase help(fourier_distance)
     
-    
-    H = np.exp( (-1.0 * D) / (2.0 * sigma**2) )
-    
-    if form == 'high' or form == 'highpass':
-        H = 1.0 - H
+    if 'band' not in kind: 
+        # Si 'band' no está contenido en el tipo, será pasabajos o pasaaltos.
+        # Filtros pasa bajos y pasa altos :
+        H = np.exp( (-1.0 * D) / (2.0 * sigma**2) ) 
+        if 'high' in kind:
+            H = 1.0 - H
+    elif bandas:
+        # Además de la bandera, se requiere verificar que wc1, wc2 sean distancias de
+        # corte válidas para el diseño del filtro.
+        # Filtros pasa-bandas y rechazo de bandas.
+        H = np.exp(
+            -1.0 * np.power(
+                (D - sigma**2) / (w * np.sqrt(D)), 2
+            )
+        ) 
+        if 'stop' in kind:
+            H = 1.0 - H
         
     return H
 ##
     
-def FiltraGaussiana(image: np.ndarray, sigma: float, form: str = 'low') -> np.ndarray:
+def FiltraGaussiana(image: np.ndarray, sigma: float, kind: str = 'low') -> np.ndarray:
     """
     
     """
-    form   = form.lower()
-    _forms = ['low', 'high', 'lowpass', 'highpass']
-    if form not in _forms:
+    kind   = kind.lower()
+    _kinds = ['low', 'high', 'lowpass', 'highpass']
+    if kind not in _kinds:
         raise Exception(f'Error : Tipo desconocido de filtro \"{kind}\".\n Tipos disponibles : {_kinds}')
     
-    H  = kernel_gaussiano(image=image, sigma=sigma, form=form)
+    H  = kernel_gaussiano(image=image, sigma=sigma, kind=kind)
     _F = np.fft.ifftshift(
             np.fft.fft2(image)
     )
@@ -353,6 +395,66 @@ a = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
 
 
 a[a > 3]
+
+
+# In[100]:
+
+
+plt.imshow(FiltraGaussiana(I, sigma=4, kind='low'))
+
+
+# In[69]:
+
+
+help(kernel_gaussiano)
+
+
+# In[88]:
+
+
+kernel_gaussiano(I, sigma=15, kind='ñ')
+
+
+# In[79]:
+
+
+'high' in 'highpass'
+
+
+# In[83]:
+
+
+all(map(lambda x: x if x != 0 else True, [1, 3]))
+
+
+# In[84]:
+
+
+help(np.isposinf)
+
+
+# In[103]:
+
+
+help(np.power)
+
+
+# In[114]:
+
+
+np.power([1, 5], 3)
+
+
+# In[134]:
+
+
+plt.imshow(kernel_gaussiano(I, kind='bandpass', wc1=54, wc2=74), cmap='gray')
+
+
+# In[133]:
+
+
+#plt.imshow(FiltraGaussiana(I, sigma=3), cmap='gray')
 
 
 # In[ ]:
