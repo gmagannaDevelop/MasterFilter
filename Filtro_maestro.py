@@ -28,7 +28,7 @@ import skimage.morphology
 import skimage.filters
 
 
-# In[52]:
+# In[60]:
 
 
 def img_fft(image: np.ndarray, shift: bool = True) -> np.ndarray:
@@ -208,30 +208,32 @@ def fourier_distance(U: np.ndarray, V: np.ndarray, centered: bool = True, square
     return _d
 ##
     
-def kernel_gaussiano(image: np.ndarray, sigma: float, kind: str = 'low') -> np.ndarray:
+def kernel_gaussiano(image: np.ndarray, sigma: float, form: str = 'low') -> np.ndarray:
     """
         Calcula un kernel gaussiano para una imagen dada.
     """
     U, V = fourier_meshgrid(image)
     D = fourier_distance(U, V)
+    
+    
     H = np.exp( (-1.0 * D) / (2.0 * sigma**2) )
     
-    if kind == 'high' or kind == 'highpass':
+    if form == 'high' or form == 'highpass':
         H = 1.0 - H
         
     return H
 ##
     
-def FiltraGaussiana(image: np.ndarray, sigma: float, kind: str = 'low') -> np.ndarray:
+def FiltraGaussiana(image: np.ndarray, sigma: float, form: str = 'low') -> np.ndarray:
     """
     
     """
-    kind   = kind.lower()
-    _kinds = ['low', 'high', 'lowpass', 'highpass']
-    if kind not in _kinds:
+    form   = form.lower()
+    _forms = ['low', 'high', 'lowpass', 'highpass']
+    if form not in _forms:
         raise Exception(f'Error : Tipo desconocido de filtro \"{kind}\".\n Tipos disponibles : {_kinds}')
     
-    H  = kernel_gaussiano(image=image, sigma=sigma, kind=kind)
+    H  = kernel_gaussiano(image=image, sigma=sigma, form=form)
     _F = np.fft.ifftshift(
             np.fft.fft2(image)
     )
@@ -333,6 +335,24 @@ all(map(lambda x: x if x != 0 else True, [1, 2, 0]))
 
 
 cv2.BORDER_REFLECT101
+
+
+# In[54]:
+
+
+help(np.nonzero)
+
+
+# In[55]:
+
+
+a = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+
+
+# In[59]:
+
+
+a[a > 3]
 
 
 # In[ ]:
