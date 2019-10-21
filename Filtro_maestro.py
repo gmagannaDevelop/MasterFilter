@@ -10,6 +10,8 @@
 # In[9]:
 
 
+
+import copy
 from typing import Tuple, List
 
 import numpy as np
@@ -34,7 +36,7 @@ import skimage.filters
 plt.rcParams['figure.figsize'] = (10, 10)
 
 
-# In[115]:
+# In[168]:
 
 
 def img_fft(image: np.ndarray, shift: bool = True) -> np.ndarray:
@@ -114,7 +116,7 @@ def pre_fft_processing(
     if override:
         nimg = cv2.copyMakeBorder(image, top, bottom, left, right, bordertype)
     else:
-        row, cols = image.shape
+        rows, cols = image.shape
         nrows, ncols = list(map(cv2.getOptimalDFTSize, image.shape))
         right = ncols - cols
         bottom = nrows - rows
@@ -265,6 +267,35 @@ def kernel_gaussiano(
         
     return H
 ##
+
+def muestra_kernels_gaussianos(
+    sigma: int = 16, 
+      wc1: int = 54, 
+      wc2: int = 74,
+) -> None:
+    """
+    """
+    
+    _dummy = np.zeros((500, 500))
+    
+    plt.subplot(2, 2, 1)
+    plt.imshow(kernel_gaussiano(_dummy, kind='low'), cmap='gray')
+    plt.title(f'Pasa bajos : sigma = {sigma}')
+    
+    plt.subplot(2, 2, 2)
+    plt.imshow(kernel_gaussiano(_dummy, kind='high'), cmap='gray')
+    plt.title(f'Pasa altos : sigma = {sigma}')
+    
+    plt.subplot(2, 2, 3)
+    plt.imshow(kernel_gaussiano(_dummy, kind='bandstop'), cmap='gray')
+    plt.title(f'Rechazo de bandas : wc1 = {wc1}, wc2 = {wc2}')
+    
+    plt.subplot(2, 2, 4)
+    plt.imshow(kernel_gaussiano(_dummy, kind='bandpass'), cmap='gray')
+    plt.title(f'Pasa bandas, wc1 = {wc1}, wc2 = {wc2}')
+    
+    
+    
     
 def FiltraGaussiana(image: np.ndarray, sigma: float, kind: str = 'low') -> np.ndarray:
     """
@@ -293,162 +324,65 @@ def filtro_disco(image: np.ndarray, radius: int = 5) -> np.ndarray:
     
     """
     _circle = skimage.morphology.disk(radius)
-    _filtered = skimage.filters.rank.mean(image, selem=_circle)
+    _filtered = skimage.filters.rank.mean(copy.deepcopy(image), selem=_circle)
     return _filtered
 ##
 
 
-# In[44]:
-
-
-#help(cv2.copyMakeBorder)
-
-
-# In[51]:
-
-
-x = fourier_meshgrid(I)
-type(x)
-
-
-# In[ ]:
-
-
-"""
-cv2.BORDER_CONSTANT
-            cv2.BORDER_REFLECT
-            cv2.BORDER_REFLECT_101
-            cv2.BORDER_DEFAULT
-            cv2.BORDER_REPLICATE
-            cv2.BORDER_WRAP
-"""
-
-
-# In[5]:
+# In[136]:
 
 
 I = img.imread('imagenes/mama.tif')
+#plt.imshow(I, cmap='gray')
 
 
-# In[28]:
-
-
-plt.imshow(cv2.copyMakeBorder(I, 0, 0, 0, 0, borderType=cv2.BORDER_CONSTANT))
-
-
-# In[26]:
-
-
-if filter(lambda x: False if x is None else True, [True, None, cv2.BORDER_CONSTANT]):
-    print('Test passed')
-
-
-# In[19]:
-
-
-cv2.BORDER_CONSTANT
-
-
-# In[27]:
-
-
-help(filter)
-
-
-# In[33]:
-
-
-all( [4, 5, 0])
-
-
-# In[34]:
-
-
-[4, 5, 0].replace(0, 5)
-
-
-# In[42]:
-
-
-all(map(lambda x: x if x != 0 else True, [1, 2, 0]))
-
-
-# In[41]:
-
-
-cv2.BORDER_REFLECT101
-
-
-# In[54]:
-
-
-help(np.nonzero)
-
-
-# In[55]:
-
-
-a = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
-
-
-# In[59]:
-
-
-a[a > 3]
-
-
-# In[100]:
-
-
-plt.imshow(FiltraGaussiana(I, sigma=4, kind='low'))
-
-
-# In[69]:
-
-
-help(kernel_gaussiano)
-
-
-# In[88]:
-
-
-kernel_gaussiano(I, sigma=15, kind='ñ')
-
-
-# In[79]:
-
-
-'high' in 'highpass'
-
-
-# In[83]:
-
-
-all(map(lambda x: x if x != 0 else True, [1, 3]))
-
-
-# In[84]:
-
-
-help(np.isposinf)
-
-
-# In[103]:
-
-
-help(np.power)
-
-
-# In[114]:
-
-
-np.power([1, 5], 3)
-
-
-# In[134]:
+# In[137]:
 
 
 plt.imshow(kernel_gaussiano(I, kind='bandpass', wc1=54, wc2=74), cmap='gray')
+
+
+# In[152]:
+
+
+x = np.zeros_like(I)
+
+
+# In[163]:
+
+
+#help(np.zeros)
+y = np.zeros((500, 500), )
+
+
+# In[162]:
+
+
+plt.imshow(y, cmap='gray')
+
+
+# In[154]:
+
+
+x.shape
+
+
+# In[141]:
+
+
+fft2(I)
+
+
+# In[147]:
+
+
+fft_viz(I)
+
+
+# In[169]:
+
+
+muestra_kernels_gaussianos()
 
 
 # In[133]:
