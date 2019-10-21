@@ -7,7 +7,7 @@
 # ### Profesor : Dr. Arturo González Vega
 # ### Alumno : Gustavo Magaña López
 
-# In[9]:
+# In[1]:
 
 
 
@@ -30,13 +30,13 @@ import skimage.morphology
 import skimage.filters
 
 
-# In[123]:
+# In[2]:
 
 
 plt.rcParams['figure.figsize'] = (10, 10)
 
 
-# In[190]:
+# In[15]:
 
 
 def img_fft(image: np.ndarray, shift: bool = True) -> np.ndarray:
@@ -215,6 +215,46 @@ def fourier_distance(U: np.ndarray, V: np.ndarray, centered: bool = True, square
     
     return _d
 ##
+
+def kernel_ideal(
+    image: np.ndarray, 
+       Do: int = 15, 
+     kind: str = 'low',
+        w: int = 10,
+      wc1: int =  None, 
+      wc2: int =  None,
+) -> np.ndarray:
+    """
+        Calcula un kernel ideal para una imagen dada.
+    """
+    _kinds = [
+        'low', 'high', 'lowpass', 'highpass', 
+        'low pass', 'high pass',
+        'bandpass', 'bandstop', 
+        'band pass', 'band stop'
+    ]
+    kind = kind.lower()
+    assert kind in _kinds, f'Tipo de filtro inválido.\n Tipos disponibles son : {_kinds}'
+    assert Do > 0, f'Do debe ser positivo. Véase la definición de un filtro ideal.'
+    
+    bandas = all(map(lambda x: x if x != 0 else True, [wc1, wc2]))
+    
+    U, V = fourier_meshgrid(image)
+    D = fourier_distance(U, V)
+    H = np.zeros_like(D)
+    
+    if 'low' in kind:
+        _mask = np.nonzero(D <= Do)
+        H[_mask] = 1.0
+    elif 'high' in kind:
+        _mask = np.nonzero(D > Do)
+        H[_mask] = 1.0
+    
+    return H
+##
+    
+
+
     
 def kernel_gaussiano(
     image: np.ndarray, 
@@ -335,73 +375,79 @@ def filtro_disco(image: np.ndarray, radius: int = 5) -> np.ndarray:
 ##
 
 
-# In[136]:
+# In[4]:
 
 
 I = img.imread('imagenes/mama.tif')
 #plt.imshow(I, cmap='gray')
 
 
-# In[137]:
+# In[5]:
 
 
 plt.imshow(kernel_gaussiano(I, kind='bandpass', wc1=54, wc2=74), cmap='gray')
 
 
-# In[152]:
+# In[6]:
 
 
 x = np.zeros_like(I)
 
 
-# In[163]:
+# In[7]:
 
 
 #help(np.zeros)
 y = np.zeros((500, 500), )
 
 
-# In[162]:
+# In[8]:
 
 
 plt.imshow(y, cmap='gray')
 
 
-# In[154]:
+# In[9]:
 
 
 x.shape
 
 
-# In[141]:
+# In[10]:
 
 
 fft2(I)
 
 
-# In[147]:
+# In[11]:
 
 
 fft_viz(I)
 
 
-# In[174]:
+# In[12]:
 
 
 muestra_kernels_gaussianos()
 
 
-# In[133]:
+# In[13]:
 
 
 #plt.imshow(FiltraGaussiana(I, sigma=3), cmap='gray')
 
 
-# In[196]:
+# In[14]:
 
 
 _tmp = kernel_gaussiano(I, kind='bandpass', wc1=52, wc2=72)
 plt.imshow(_tmp, cmap='gray')
+
+
+# In[22]:
+
+
+plt.imshow(kernel_ideal(I, Do=20000, kind='high'), cmap='gray')
 
 
 # In[ ]:
