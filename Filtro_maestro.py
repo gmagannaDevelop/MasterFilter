@@ -36,7 +36,7 @@ import skimage.filters
 plt.rcParams['figure.figsize'] = (10, 10)
 
 
-# In[85]:
+# In[3]:
 
 
 def img_surf(image: np.ndarray) -> None:
@@ -557,10 +557,16 @@ f = lambda x: True if x > 5 else False
 assert f(6), 'No es mayor a 5'
 
 
-# In[89]:
+# In[ ]:
 
 
-img_surf(kernel_butterworth(I, kind='bandpass', Do=500))
+
+
+
+# In[7]:
+
+
+img_surf(kernel_gaussiano(I, kind='high', sigma=200))
 
 
 # In[ ]:

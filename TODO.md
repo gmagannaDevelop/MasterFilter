@@ -17,6 +17,9 @@
    Ya que pasa\_altos() es simplemente 1 - pasa\_bajos()
    Idem rechaza\_bandas() es  1 - pasa\_bandas()
 
+5. Agregar protección para la divisón por cero. (**gus**)
+   **np.finfo(float).eps**
+
 # Puntos de la tarea : 
 Fundamentos de procesamiento digital de imágenes : Funciones de filtrado en frecuencia
 
