@@ -36,7 +36,7 @@ import skimage.filters
 plt.rcParams['figure.figsize'] = (10, 10)
 
 
-# In[58]:
+# In[66]:
 
 
 def img_fft(image: np.ndarray, shift: bool = True) -> np.ndarray:
@@ -310,15 +310,7 @@ def kernel_gaussiano(
         Calcula un kernel gaussiano para una imagen dada.
     """
     
-    _kinds = [
-        'low', 'high', 'lowpass', 'highpass', 
-        'low pass', 'high pass',
-        'bandpass', 'bandstop', 
-        'band pass', 'band stop'
-    ]
-    kind = kind.lower()
-    assert kind in _kinds, f'Tipo de filtro inválido.\n Tipos disponibles son : {_kinds}'
-    assert sigma > 0, f'Sigma debe ser positivo. Véase la definición de un filtro Gaussiano.'
+    assert _param_check(kind, sigma), 'Tipo de filtro o frecuencia de corte inválidas.' 
     
     bandas = all(map(lambda x: x if x != 0 else True, [wc1, wc2]))
     if bandas:
@@ -424,7 +416,7 @@ I = img.imread('imagenes/mama.tif')
 #plt.imshow(I, cmap='gray')
 
 
-# In[5]:
+# In[69]:
 
 
 plt.imshow(kernel_gaussiano(I, kind='bandpass', wc1=54, wc2=74), cmap='gray')

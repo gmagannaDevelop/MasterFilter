@@ -2,9 +2,9 @@
 # Cosas por hacer (internas) :
 1. Crear función para el kernel Butterworth (**gus**).
 
-2. Función \_param\_check() (**gus**) :
+2. Función \_param\_check() (**gus**) : :white_check_mark:
    * Definir el cuerpo de \_param\_check() :white_check_mark: (**gus**)
-   * Usarlo para reducir el boilerplate.
+   * Usarlo para reducir el boilerplate. :white_check_mark: (**gus**)
 
 # Puntos de la tarea : 
 Fundamentos de procesamiento digital de imágenes : Funciones de filtrado en frecuencia
