@@ -1,10 +1,21 @@
 
 # Cosas por hacer (internas) :
-1. Crear función para el kernel Butterworth (**gus**).
+1. Crear función para el kernel Butterworth (**gus**) :white_check_mark:.
 
 2. Función \_param\_check() (**gus**) : :white_check_mark:
    * Definir el cuerpo de \_param\_check() :white_check_mark: (**gus**)
    * Usarlo para reducir el boilerplate. :white_check_mark: (**gus**)
+
+3. Debugguear kernel\_butterworth() (**gus**) :pencil:
+
+4. Reimplementar filtros.
+   Parecía que escribirlo en función del tipo de kernel era una buena idea, 
+   pero en realidad lo mejor es crear dos funciones :
+   * pasa\_bajos() que pueda computar las tres formulaciones.
+   * pasa\_bandas() idem.
+
+   Ya que pasa\_altos() es simplemente 1 - pasa\_bajos()
+   Idem rechaza\_bandas() es  1 - pasa\_bandas()
 
 # Puntos de la tarea : 
 Fundamentos de procesamiento digital de imágenes : Funciones de filtrado en frecuencia

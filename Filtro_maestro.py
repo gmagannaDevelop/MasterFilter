@@ -36,7 +36,7 @@ import skimage.filters
 plt.rcParams['figure.figsize'] = (10, 10)
 
 
-# In[78]:
+# In[85]:
 
 
 def img_surf(image: np.ndarray) -> None:
@@ -271,9 +271,9 @@ def kernel_ideal(
     image: np.ndarray, 
        Do: int = 15, 
      kind: str = 'low',
-        w: int =  None,
-      wc1: int =  None, 
-      wc2: int =  None,
+        w: int = None,
+      wc1: int = None, 
+      wc2: int = None,
 ) -> np.ndarray:
     """
         Calcula un kernel ideal para una imagen dada.
@@ -318,32 +318,48 @@ def kernel_butterworth(
     image: np.ndarray, 
        Do: int = 15, 
      kind: str = 'low',
-        w: int =  None,
-      wc1: int =  None, 
-      wc2: int =  None,
+        n: int = 1,
+        w: int = None,
+      wc1: int = None, 
+      wc2: int = None,
 ) -> np.ndarray:
     """
         Calcula un kernel tipo Butterworth para una imagen dada.
     """
     assert _param_check(kind, Do), 'Tipo de filtro o frecuencia de corte inválidas.' 
+    assert n in range(1,10+1), f'Error: n (= {n}) no se encuentra en el rango [1,10]'
+    
+    bandas = all(map(lambda x: x if x != 0 else True, [wc1, wc2]))
+    if bandas:
+        assert wc1 < wc2, f'Valores wc1 = {wc1}, wc2 = {wc2} no cumplen wc1 < wc2.'
+        Do = np.ceil((wc2 + wc1) / 2.0)
+        w  = np.ceil(2.0 * (wc2 - Do))
     
     U, V = fourier_meshgrid(image)
     D = fourier_distance(U, V)
     H = np.zeros_like(D)
     
     if 'low' in kind:
-        pass 
+        H = 1.0 / 1.0 + (D/Do**2)**n
+    elif 'high' in kind:
+        H = 1.0 / 1.0 + (Do**2/D)**n
+    elif 'pass' in kind:
+        w2 = w**2
+        H = 1.0 / 1.0 + ( (D - Do**2)**2 / (w2 * D) )**n
+    elif 'stop' in kind:
+        w2 = w**2
+        H = 1.0 / 1.0 + ( (w2 * D) / (D - Do**2)**2 )**n
     
-    pass
+    return H
 ##
 
 def kernel_gaussiano(
     image: np.ndarray, 
     sigma: int = 15, 
      kind: str = 'low',
-        w: int =  None,
-      wc1: int =  None, 
-      wc2: int =  None,
+        w: int = None,
+      wc1: int = None, 
+      wc2: int = None,
 ) -> np.ndarray:
     """
         Calcula un kernel gaussiano para una imagen dada.
@@ -541,10 +557,10 @@ f = lambda x: True if x > 5 else False
 assert f(6), 'No es mayor a 5'
 
 
-# In[84]:
+# In[89]:
 
 
-img_surf(kernel_gaussiano(I, kind='high', wc1=400, wc2=5000))
+img_surf(kernel_butterworth(I, kind='bandpass', Do=500))
 
 
 # In[ ]:
