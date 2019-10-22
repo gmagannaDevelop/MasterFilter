@@ -3,7 +3,7 @@
 1. Crear función para el kernel Butterworth.
 
 2. Función \_param\_check() :
-   * Definir el cuerpo de \_param\_check() :check:
+   * Definir el cuerpo de \_param\_check() :white_check_mark:
    * Usarlo para reducir el boilerplate.
 
 # Puntos de la tarea : 
