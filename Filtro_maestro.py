@@ -36,7 +36,7 @@ import skimage.filters
 plt.rcParams['figure.figsize'] = (10, 10)
 
 
-# In[50]:
+# In[54]:
 
 
 def img_fft(image: np.ndarray, shift: bool = True) -> np.ndarray:
@@ -238,6 +238,18 @@ def _param_check(kind: str, Do: int) -> bool:
             False : Si no. 
         
     """
+    _kinds = [
+        'low', 'high', 'lowpass', 'highpass', 
+        'low pass', 'high pass',
+        'bandpass', 'bandstop', 
+        'band pass', 'band stop'
+    ]
+    kind = kind.lower()
+    _kind_check = kind in _kinds
+    _dist_check = Do > 0
+    
+    return _kind_check and _dist_check
+##
 
 def kernel_ideal(
     image: np.ndarray, 
@@ -250,15 +262,7 @@ def kernel_ideal(
     """
         Calcula un kernel ideal para una imagen dada.
     """
-    _kinds = [
-        'low', 'high', 'lowpass', 'highpass', 
-        'low pass', 'high pass',
-        'bandpass', 'bandstop', 
-        'band pass', 'band stop'
-    ]
-    kind = kind.lower()
-    assert kind in _kinds, f'Tipo de filtro inválido.\n Tipos disponibles son : {_kinds}'
-    assert Do > 0, f'Do debe ser positivo. Véase la definición de un filtro ideal.'
+    
     
     bandas = all(map(lambda x: x if x != 0 else True, [wc1, wc2]))
     print(f'bandas = {bandas}')
