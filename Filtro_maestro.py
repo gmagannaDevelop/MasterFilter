@@ -36,7 +36,7 @@ import skimage.filters
 plt.rcParams['figure.figsize'] = (10, 10)
 
 
-# In[54]:
+# In[58]:
 
 
 def img_fft(image: np.ndarray, shift: bool = True) -> np.ndarray:
@@ -263,6 +263,7 @@ def kernel_ideal(
         Calcula un kernel ideal para una imagen dada.
     """
     
+    assert _param_check(kind, Do), 'Tipo de filtro o frecuencia de corte inválidas.' 
     
     bandas = all(map(lambda x: x if x != 0 else True, [wc1, wc2]))
     print(f'bandas = {bandas}')
@@ -485,10 +486,10 @@ _tmp = kernel_gaussiano(I, kind='bandpass', wc1=52, wc2=72)
 plt.imshow(_tmp, cmap='gray')
 
 
-# In[52]:
+# In[65]:
 
 
-plt.imshow(kernel_ideal(I, wc1=40, wc2=1000, kind='bandpass'), cmap='gray')
+plt.imshow(kernel_ideal(I, Do=5000, kind='low'), cmap='gray')
 
 
 # In[25]:
@@ -497,10 +498,16 @@ plt.imshow(kernel_ideal(I, wc1=40, wc2=1000, kind='bandpass'), cmap='gray')
 assert None or False, 'No mames güey'
 
 
-# In[32]:
+# In[55]:
 
 
-bool(None)
+f = lambda x: True if x > 5 else False
+
+
+# In[57]:
+
+
+assert f(6), 'No es mayor a 5'
 
 
 # In[ ]:
