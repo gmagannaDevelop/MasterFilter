@@ -216,6 +216,29 @@ def fourier_distance(U: np.ndarray, V: np.ndarray, centered: bool = True, square
     return _d
 ##
 
+def _param_check(kind: str, Do: int) -> bool:
+    """
+        Para reducir la redundancia en el cuerpo de las funciones, 
+        esta función verifica que :
+        1.- La formulación especificada 'kind' sea válida.
+            i.e. Alguna de las siguientes :
+                'low', 'lowpass', 'low pass',
+                'high', 'highpass', 'high pass',
+                'bandpass', 'bandstop', 
+                'band pass', 'band stop'
+        2.- Que el parámetro `frecuencia de corte`, es decir
+            Do o sigma, sea positivo.
+    
+    Parámetros :
+            kind : string, tipo de filtro.
+              Do : int, valor de la frecuencia de corte (distancia en el espacio de Fourier)
+              
+    Regresa :
+            True  : Si se cumplen ambas condiciones.
+            False : Si no. 
+        
+    """
+
 def kernel_ideal(
     image: np.ndarray, 
        Do: int = 15, 
