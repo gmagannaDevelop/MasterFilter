@@ -36,7 +36,7 @@ import skimage.filters
 plt.rcParams['figure.figsize'] = (10, 10)
 
 
-# In[15]:
+# In[50]:
 
 
 def img_fft(image: np.ndarray, shift: bool = True) -> np.ndarray:
@@ -220,7 +220,7 @@ def kernel_ideal(
     image: np.ndarray, 
        Do: int = 15, 
      kind: str = 'low',
-        w: int = 10,
+        w: int =  None,
       wc1: int =  None, 
       wc2: int =  None,
 ) -> np.ndarray:
@@ -238,6 +238,7 @@ def kernel_ideal(
     assert Do > 0, f'Do debe ser positivo. Véase la definición de un filtro ideal.'
     
     bandas = all(map(lambda x: x if x != 0 else True, [wc1, wc2]))
+    print(f'bandas = {bandas}')
     
     U, V = fourier_meshgrid(image)
     D = fourier_distance(U, V)
@@ -249,18 +250,31 @@ def kernel_ideal(
     elif 'high' in kind:
         _mask = np.nonzero(D > Do)
         H[_mask] = 1.0
+    else:
+        _err_msg  = "Para ejecutar un filtro pasa-bandas o de rechazo de banda,"
+        _err_msg += "especificar una de las siguientes combinaciones de parámetros :"
+        _err_msg += "\n\t\t 1.- Do y w \n\t\t 2.- wc1y wc2."
+        assert w or bandas, _err_msg
+        if w:
+            wc1 = Do - w/2
+            wc2 = Do + w/2
+        else:
+            assert wc1 < wc2, f'Valores wc1 = {wc1}, wc2 = {wc2} no cumplen la condición wc1 < wc2.'
+        if 'pass' in kind:
+            _mask = np.nonzero((D >= wc1) & (D <= wc2))
+            H[_mask] = 1.0
+        elif 'stop' in kind:
+            _mask = np.nonzero((D < wc1) | (D > wc2))
+            H[_mask] = 1.0
     
     return H
 ##
-    
-
-
-    
+ 
 def kernel_gaussiano(
     image: np.ndarray, 
     sigma: int = 15, 
      kind: str = 'low',
-        w: int = 10,
+        w: int =  None,
       wc1: int =  None, 
       wc2: int =  None,
 ) -> np.ndarray:
@@ -280,7 +294,7 @@ def kernel_gaussiano(
     
     bandas = all(map(lambda x: x if x != 0 else True, [wc1, wc2]))
     if bandas:
-        assert wc1 < wc2, f'Valores wc1:{wc1}, wc2:{wc2} no cumplen wc1 < wc2.'
+        assert wc1 < wc2, f'Valores wc1 = {wc1}, wc2 = {wc2} no cumplen wc1 < wc2.'
         sigma = np.ceil((wc2 + wc1) / 2.0)
         w     = np.ceil(2.0 * (wc2 - sigma))
     
@@ -300,7 +314,7 @@ def kernel_gaussiano(
         # Filtros pasa-bandas y rechazo de bandas.
         bandas = all(map(lambda x: x if x != 0 else True, [wc1, wc2]))
         if bandas:
-            assert wc1 < wc2, f'Valores wc1:{wc1}, wc2:{wc2} no cumplen wc1 < wc2.'
+            assert wc1 < wc2, f'Valores wc1 = {wc1}, wc2 = {wc2} no cumplen wc1 < wc2.'
             sigma = np.ceil((wc2 + wc1) / 2.0)
             w     = np.ceil(wc2 - sigma)
         H = np.exp(
@@ -444,10 +458,22 @@ _tmp = kernel_gaussiano(I, kind='bandpass', wc1=52, wc2=72)
 plt.imshow(_tmp, cmap='gray')
 
 
-# In[22]:
+# In[52]:
 
 
-plt.imshow(kernel_ideal(I, Do=20000, kind='high'), cmap='gray')
+plt.imshow(kernel_ideal(I, wc1=40, wc2=1000, kind='bandpass'), cmap='gray')
+
+
+# In[25]:
+
+
+assert None or False, 'No mames güey'
+
+
+# In[32]:
+
+
+bool(None)
 
 
 # In[ ]:
