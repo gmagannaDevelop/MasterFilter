@@ -1,9 +1,9 @@
 
 # Cosas por hacer (internas) :
-1. Crear función para el kernel Butterworth.
+1. Crear función para el kernel Butterworth (**gus**).
 
-2. Función \_param\_check() :
-   * Definir el cuerpo de \_param\_check() :white_check_mark:
+2. Función \_param\_check() (**gus**) :
+   * Definir el cuerpo de \_param\_check() :white_check_mark: (**gus**)
    * Usarlo para reducir el boilerplate.
 
 # Puntos de la tarea : 
