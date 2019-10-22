@@ -36,8 +36,24 @@ import skimage.filters
 plt.rcParams['figure.figsize'] = (10, 10)
 
 
-# In[66]:
+# In[78]:
 
+
+def img_surf(image: np.ndarray) -> None:
+    """
+    """
+    fig  = plt.figure()
+    ax   = fig.gca(projection='3d')
+    x, y = list(map(lambda x: np.arange(0, x), image.shape))
+    X, Y = np.meshgrid(x, y)
+    #U, V = fourier_meshgrid(image)
+    #print(f'Shapes X:{X.shape}\n Y:{Y.shape}\n Z:{Z.shape}')
+
+    surf = ax.plot_surface(X, Y, image.T, cmap=cm.coolwarm,
+                            linewidth=0, antialiased=False)
+    
+    plt.show()
+##
 
 def img_fft(image: np.ndarray, shift: bool = True) -> np.ndarray:
     """
@@ -297,7 +313,30 @@ def kernel_ideal(
     
     return H
 ##
- 
+
+def kernel_butterworth(
+    image: np.ndarray, 
+       Do: int = 15, 
+     kind: str = 'low',
+        w: int =  None,
+      wc1: int =  None, 
+      wc2: int =  None,
+) -> np.ndarray:
+    """
+        Calcula un kernel tipo Butterworth para una imagen dada.
+    """
+    assert _param_check(kind, Do), 'Tipo de filtro o frecuencia de corte inválidas.' 
+    
+    U, V = fourier_meshgrid(image)
+    D = fourier_distance(U, V)
+    H = np.zeros_like(D)
+    
+    if 'low' in kind:
+        pass 
+    
+    pass
+##
+
 def kernel_gaussiano(
     image: np.ndarray, 
     sigma: int = 15, 
@@ -500,6 +539,12 @@ f = lambda x: True if x > 5 else False
 
 
 assert f(6), 'No es mayor a 5'
+
+
+# In[84]:
+
+
+img_surf(kernel_gaussiano(I, kind='high', wc1=400, wc2=5000))
 
 
 # In[ ]:
