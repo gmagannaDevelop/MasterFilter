@@ -261,18 +261,16 @@ def _param_check(kind: str, Do: int) -> bool:
     return _kind_check and _dist_check
 ##
 
-def _param_check2(kind: str, Do: int) -> bool:
+def _param_check2(form: str, Do: int) -> bool:
     """
         Para reducir la redundancia en el cuerpo de las funciones, 
         esta función verifica que :
-        1.- El tipo de filtro especificado kind.
+        1.- La formulación de filtro especificada, 'form' se válida
             i.e. Alguna de las siguientes :
-                'low', 'lowpass', 'low pass',
-                'high', 'highpass', 'high pass',
-                'bandpass', 'bandstop', 
-                'band pass', 'band stop'
+            'ideal', 'btw', 'butterworth', 'gauss', 'gaussian'
+
         2.- Que el parámetro `frecuencia de corte`, es decir
-            Do o sigma, sea positivo.
+            'Do' o 'sigma', sea positivo.
     
     Parámetros :
             kind : string, tipo de filtro.
@@ -283,17 +281,12 @@ def _param_check2(kind: str, Do: int) -> bool:
             False : Si no. 
         
     """
-    _kinds = [
-        'low', 'high', 'lowpass', 'highpass', 
-        'low pass', 'high pass',
-        'bandpass', 'bandstop', 
-        'band pass', 'band stop'
-    ]
-    kind = kind.lower()
-    _kind_check = kind in _kinds
+    _forms = ['ideal', 'btw', 'butterworth', 'gauss', 'gaussian']
+    form = form.lower()
+    _form_check = form in _forms
     _dist_check = Do > 0
     
-    return _kind_check and _dist_check
+    return _form_check and _dist_check
 ##
 
 def kernel_ideal(
@@ -438,7 +431,7 @@ def kernel_gaussiano(
 def kernel_lowpass(
     image: np.ndarray, 
     sigma: int = 15, 
-     kind: str = 'ideal',
+     form: str = 'ideal',
         w: int = None,
       wc1: int = None, 
       wc2: int = None,
@@ -446,9 +439,15 @@ def kernel_lowpass(
     """
     """
     
+    assert _param_check2(form, Do), 'Formulación del filtro o frecuencia de corte inválidas.'
+    
     U, V = fourier_meshgrid(image)
     D = fourier_distance(U, V)
     H = np.zeros_like(D)
+    
+    
+        _mask = np.nonzero(D <= Do)
+        H[_mask] = 1.0
     
     return H
 ##
