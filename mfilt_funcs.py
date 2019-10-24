@@ -487,7 +487,7 @@ def kernel_band_reject(
       wc1: int = None,
       wc2: int = None,
      form: str = 'ideal',
-        n: int = None
+        n: int = 1
 ) -> np.ndarray:
     """
         Diseña un filtro de rechazo de banda.
@@ -514,6 +514,8 @@ def kernel_band_reject(
         _mask = np.nonzero( (D >= Do - w/2) & (D <= Do + w/2))
         H[_mask] = 0.0
     elif form == 'btw' or form == 'butterworth':
+        assert type(n) is int, f"n debe ser de tipo 'int', no {type(n)}"
+        assert n in range(1, 10+1), f'n (={n}) debe estar en [1, 10]'
         H = 1.0 / (1.0 + ( w**2 * D / (D - Do**2 + eps)**2 )**n )
     elif 'gauss' in form:
         H = 1.0 - np.exp(-1.0 * (D - Do**2)**2 / (w**2 * D) )
@@ -521,6 +523,21 @@ def kernel_band_reject(
         pass
 
     return H
+##
+
+def kernel_band_pass(
+    image: np.ndarray,
+       Do: int = 50,
+        w: int = 15,
+      wc1: int = None,
+      wc2: int = None,
+     form: str = 'ideal',
+        n: int = 1
+) -> np.ndarray:
+    """
+        Diseña un filtro pasa bandas.
+    """
+    return 1.0 - kernel_band_reject(image, Do=Do, w=w, wc1=wc1, wc2=wc2, form=form, n=n)
 ##
 
 def distance_meshgrid_2D(image: np.ndarray) -> np.ndarray:

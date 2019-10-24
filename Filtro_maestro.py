@@ -35,7 +35,7 @@ from PIL import Image
 import scipy.io as io
 
 
-# In[145]:
+# In[156]:
 
 
 # Importamos todas nuestras funciones :
@@ -185,10 +185,10 @@ di = np.uint8(dd)
 img_surf(distance_meshgrid_2D(I))
 
 
-# In[141]:
+# In[158]:
 
 
-plt.imshow(kernel_band_reject(I, wc1=201, wc2=500), cmap='gray')
+plt.imshow(kernel_band_pass(I, wc1=201, wc2=500, form='btw'), cmap='gray')
 
 
 # In[147]:
