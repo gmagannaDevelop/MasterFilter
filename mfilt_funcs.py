@@ -416,33 +416,11 @@ def distance_meshgrid_2D(image: np.ndarray) -> np.ndarray:
     return _dd
 ##
 
-def muestra_kernels_gaussianos(
-    sigma: int = 16, 
-      wc1: int = 54, 
-      wc2: int = 74,
-) -> NoReturn:
+def master_filter():
     """
     """
-    
-    _dummy = np.zeros((500, 500))
-    
-    plt.subplot(2, 2, 1)
-    plt.imshow(kernel_gaussiano(_dummy, kind='low'), cmap='gray')
-    plt.title(f'Pasa bajos : sigma = {sigma}')
-    
-    plt.subplot(2, 2, 2)
-    plt.imshow(kernel_gaussiano(_dummy, kind='high'), cmap='gray')
-    plt.title(f'Pasa altos : sigma = {sigma}')
-    
-    plt.subplot(2, 2, 3)
-    plt.imshow(kernel_gaussiano(_dummy, kind='bandstop', wc1=wc1, wc2=wc2), cmap='gray')
-    plt.title(f'Rechazo de bandas : wc1 = {wc1}, wc2 = {wc2}')
-    
-    plt.subplot(2, 2, 4)
-    plt.imshow(kernel_gaussiano(_dummy, kind='bandpass', wc1=wc1, wc2=wc2), cmap='gray')
-    plt.title(f'Pasa bandas, wc1 = {wc1}, wc2 = {wc2}')
+    pass
 ##
-    
     
     
 def FiltraGaussiana(image: np.ndarray, sigma: float, kind: str = 'low') -> np.ndarray:
