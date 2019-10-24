@@ -83,12 +83,12 @@ def fft_viz(image: np.ndarray, shift: bool = True) -> None:
 ##
 
 def pre_fft_processing(
-    image: np.ndarray,
-      top: int = None,
-   bottom: int = None, 
-     left: int = None,
-    right: int = None,
-    borderType: int = None,
+     image: np.ndarray,
+       top: int = None,
+    bottom: int = None,
+      left: int = None,
+     right: int = None,
+borderType: int = cv2.BORDER_CONSTANT,
 ) -> np.ndarray:
     """
         Esta función lleva a cabo el proceso de 'padding', necesario antes 
@@ -131,7 +131,7 @@ def pre_fft_processing(
         right = ncols - cols
         bottom = nrows - rows
         bordertype = cv2.BORDER_CONSTANT #just to avoid line breakup in PDF file
-        nimg = cv2.copyMakeBorder(image,0,bottom,0,right,bordertype, value = 0)
+        nimg = cv2.copyMakeBorder(image, 0, bottom, 0, right, bordertype, value = 0)
     
     return nimg
 ##
@@ -456,8 +456,11 @@ def kernel_lowpass(
     elif 'gauss' in form:
         H = np.exp( (-1.0 * D) / (2.0 * sigma**2) )
     else:
-        assert n is not None, f'Por favor indique un valor para n'
-        assert type(n) is int and n in range(1, 10+1), f'n = {n} no es válido. n debe estar en [1, 10]'
+        if n is None:
+            n = 1
+        else:
+            assert type(n) is int, f'n debe ser de la clase int, no {type(n)}'
+            assert n in range(1, 10+1), f'n = {n} no es válido. n debe estar en [1, 10]'
         H = 1.0 / ( 1.0 + (D / Do**2)**n )
     
     return H

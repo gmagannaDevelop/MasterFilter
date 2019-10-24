@@ -7,7 +7,7 @@
 # ### Profesor : Dr. Arturo González Vega
 # ### Alumno : Gustavo Magaña López
 
-# In[5]:
+# In[92]:
 
 
 
@@ -30,8 +30,12 @@ import skimage
 import skimage.morphology
 import skimage.filters
 
+from PIL import Image
 
-# In[36]:
+import scipy.io as io
+
+
+# In[70]:
 
 
 # Importamos todas nuestras funciones :
@@ -40,10 +44,17 @@ importlib.reload(mine)
 from mfilt_funcs import *
 
 
-# In[7]:
+# In[99]:
 
 
-plt.rcParams['figure.figsize'] = (5, 5)
+def black_and_white(input_image_path):
+   return Image.open(input_image_path).convert('L')
+
+
+# In[105]:
+
+
+plt.rcParams['figure.figsize'] = (10, 10)
 
 
 # In[8]:
@@ -66,20 +77,83 @@ plt.imshow(I, cmap='gray')
 fft_viz(I)
 
 
-# In[42]:
+# In[83]:
 
 
-img_surf(kernel_highpass(I, sigma=5000, form='btw', n=7))
+HighI = kernel_highpass(pre_fft_processing(I), sigma=150, form='btw', n=7)
 
 
-# In[21]:
+# In[84]:
 
 
-plt.imshow(kernel_ideal(I, Do=500), cmap='gray')
+img_surf(HighI)
+
+
+# In[85]:
+
+
+plt.imshow(HighI, cmap='gray')
+
+
+# In[60]:
+
+
+list(map(cv2.getOptimalDFTSize, I.shape))
+
+
+# In[62]:
+
+
+I.shape
+
+
+# In[65]:
+
+
+newI = pre_fft_processing(I)
+
+
+# In[101]:
+
+
+x = black_and_white('imagenes/RadiografiaRuidoCoherente.jpg')
+
+
+# In[102]:
+
+
+#io.m
+
+
+# In[103]:
+
+
+plt.imshow(x, cmap='gray')
+
+
+# In[106]:
+
+
+fft_viz(x)
+
+
+# In[89]:
+
+
+x.shape
+
+
+# In[91]:
+
+
+help(plt.imread)
 
 
 # In[ ]:
 
 
-
+"""
+    Ideas = crear una matriz de desplazamientos.
+    
+"""
 
