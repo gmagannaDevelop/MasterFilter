@@ -33,7 +33,6 @@ import skimage.filters
 eps = np.finfo(float).eps
 eps.setflags(write=False)
 
-
 def img_surf(image: np.ndarray) -> None:
     """
     """
@@ -262,6 +261,41 @@ def _param_check(kind: str, Do: int) -> bool:
     return _kind_check and _dist_check
 ##
 
+def _param_check2(kind: str, Do: int) -> bool:
+    """
+        Para reducir la redundancia en el cuerpo de las funciones, 
+        esta función verifica que :
+        1.- El tipo de filtro especificado kind.
+            i.e. Alguna de las siguientes :
+                'low', 'lowpass', 'low pass',
+                'high', 'highpass', 'high pass',
+                'bandpass', 'bandstop', 
+                'band pass', 'band stop'
+        2.- Que el parámetro `frecuencia de corte`, es decir
+            Do o sigma, sea positivo.
+    
+    Parámetros :
+            kind : string, tipo de filtro.
+              Do : int, valor de la frecuencia de corte (distancia en el espacio de Fourier)
+              
+    Regresa :
+            True  : Si se cumplen ambas condiciones.
+            False : Si no. 
+        
+    """
+    _kinds = [
+        'low', 'high', 'lowpass', 'highpass', 
+        'low pass', 'high pass',
+        'bandpass', 'bandstop', 
+        'band pass', 'band stop'
+    ]
+    kind = kind.lower()
+    _kind_check = kind in _kinds
+    _dist_check = Do > 0
+    
+    return _kind_check and _dist_check
+##
+
 def kernel_ideal(
     image: np.ndarray, 
        Do: int = 15, 
@@ -337,7 +371,7 @@ def kernel_butterworth(
     if 'low' in kind:
         H = 1.0 / 1.0 + (D/Do**2)**n
     elif 'high' in kind:
-        H = 1.0 / 1.0 + (Do**2/D)**n
+        H = 1.0 / 1.0 + (Do**2/(D + eps))**n
     elif 'pass' in kind:
         w2 = w**2
         H = 1.0 / 1.0 + ( (D - Do**2)**2 / (w2 * D + eps) )**n
@@ -401,6 +435,24 @@ def kernel_gaussiano(
     return H
 ##
 
+def kernel_lowpass(
+    image: np.ndarray, 
+    sigma: int = 15, 
+     kind: str = 'ideal',
+        w: int = None,
+      wc1: int = None, 
+      wc2: int = None,
+) -> np.ndarray:
+    """
+    """
+    
+    U, V = fourier_meshgrid(image)
+    D = fourier_distance(U, V)
+    H = np.zeros_like(D)
+    
+    return H
+##
+
 def muestra_kernels_gaussianos(
     sigma: int = 16, 
       wc1: int = 54, 
@@ -426,7 +478,7 @@ def muestra_kernels_gaussianos(
     plt.subplot(2, 2, 4)
     plt.imshow(kernel_gaussiano(_dummy, kind='bandpass', wc1=wc1, wc2=wc2), cmap='gray')
     plt.title(f'Pasa bandas, wc1 = {wc1}, wc2 = {wc2}')
-    
+##
     
     
     
@@ -460,4 +512,5 @@ def filtro_disco(image: np.ndarray, radius: int = 5) -> np.ndarray:
     _filtered = skimage.filters.rank.mean(copy.deepcopy(image), selem=_circle)
     return _filtered
 ##
+
 
