@@ -7,7 +7,7 @@
 # ### Profesor : Dr. Arturo González Vega
 # ### Alumno : Gustavo Magaña López
 
-# In[3]:
+# In[2]:
 
 
 
@@ -30,20 +30,20 @@ import skimage.morphology
 import skimage.filters
 
 
-# In[4]:
+# In[3]:
 
 
 eps = np.finfo(float).eps
 eps.setflags(write=False)
 
 
-# In[5]:
+# In[4]:
 
 
 plt.rcParams['figure.figsize'] = (10, 10)
 
 
-# In[24]:
+# In[34]:
 
 
 def img_surf(image: np.ndarray) -> None:
@@ -274,6 +274,41 @@ def _param_check(kind: str, Do: int) -> bool:
     return _kind_check and _dist_check
 ##
 
+def _param_check2(kind: str, Do: int) -> bool:
+    """
+        Para reducir la redundancia en el cuerpo de las funciones, 
+        esta función verifica que :
+        1.- El tipo de filtro especificado kind.
+            i.e. Alguna de las siguientes :
+                'low', 'lowpass', 'low pass',
+                'high', 'highpass', 'high pass',
+                'bandpass', 'bandstop', 
+                'band pass', 'band stop'
+        2.- Que el parámetro `frecuencia de corte`, es decir
+            Do o sigma, sea positivo.
+    
+    Parámetros :
+            kind : string, tipo de filtro.
+              Do : int, valor de la frecuencia de corte (distancia en el espacio de Fourier)
+              
+    Regresa :
+            True  : Si se cumplen ambas condiciones.
+            False : Si no. 
+        
+    """
+    _kinds = [
+        'low', 'high', 'lowpass', 'highpass', 
+        'low pass', 'high pass',
+        'bandpass', 'bandstop', 
+        'band pass', 'band stop'
+    ]
+    kind = kind.lower()
+    _kind_check = kind in _kinds
+    _dist_check = Do > 0
+    
+    return _kind_check and _dist_check
+##
+
 def kernel_ideal(
     image: np.ndarray, 
        Do: int = 15, 
@@ -349,7 +384,7 @@ def kernel_butterworth(
     if 'low' in kind:
         H = 1.0 / 1.0 + (D/Do**2)**n
     elif 'high' in kind:
-        H = 1.0 / 1.0 + (Do**2/D)**n
+        H = 1.0 / 1.0 + (Do**2/(D + eps))**n
     elif 'pass' in kind:
         w2 = w**2
         H = 1.0 / 1.0 + ( (D - Do**2)**2 / (w2 * D + eps) )**n
@@ -413,6 +448,24 @@ def kernel_gaussiano(
     return H
 ##
 
+def kernel_lowpass(
+    image: np.ndarray, 
+    sigma: int = 15, 
+     kind: str = 'ideal',
+        w: int = None,
+      wc1: int = None, 
+      wc2: int = None,
+) -> np.ndarray:
+    """
+    """
+    
+    U, V = fourier_meshgrid(image)
+    D = fourier_distance(U, V)
+    H = np.zeros_like(D)
+    
+    return H
+##
+
 def muestra_kernels_gaussianos(
     sigma: int = 16, 
       wc1: int = 54, 
@@ -438,7 +491,7 @@ def muestra_kernels_gaussianos(
     plt.subplot(2, 2, 4)
     plt.imshow(kernel_gaussiano(_dummy, kind='bandpass', wc1=wc1, wc2=wc2), cmap='gray')
     plt.title(f'Pasa bandas, wc1 = {wc1}, wc2 = {wc2}')
-    
+##
     
     
     
@@ -474,69 +527,69 @@ def filtro_disco(image: np.ndarray, radius: int = 5) -> np.ndarray:
 ##
 
 
-# In[8]:
+# In[6]:
 
 
 I = img.imread('imagenes/mama.tif')
 #plt.imshow(I, cmap='gray')
 
 
-# In[9]:
+# In[7]:
 
 
 plt.imshow(kernel_gaussiano(I, kind='bandpass', wc1=54, wc2=74), cmap='gray')
 
 
-# In[10]:
+# In[8]:
 
 
 x = np.zeros_like(I)
 
 
-# In[11]:
+# In[9]:
 
 
 #help(np.zeros)
 y = np.zeros((500, 500), )
 
 
-# In[13]:
+# In[10]:
 
 
 #plt.imshow(y, cmap='gray')
 
 
-# In[14]:
+# In[11]:
 
 
 x.shape
 
 
-# In[16]:
+# In[12]:
 
 
 # fft2(I)
 
 
-# In[17]:
+# In[13]:
 
 
 fft_viz(I)
 
 
-# In[18]:
+# In[14]:
 
 
 muestra_kernels_gaussianos()
 
 
-# In[19]:
+# In[15]:
 
 
 #plt.imshow(FiltraGaussiana(I, sigma=3), cmap='gray')
 
 
-# In[20]:
+# In[16]:
 
 
 _tmp = kernel_gaussiano(I, kind='bandpass', wc1=52, wc2=72)
@@ -573,16 +626,60 @@ assert f(6), 'No es mayor a 5'
 
 
 
+# In[35]:
+
+
+#for i in range(1, 10):
+img_surf(kernel_butterworth(I, kind='high', Do=30))
+
+
+# In[29]:
+
+
+plt.imshow(FiltraGaussiana(I, sigma=100) , cmap='gray')
+
+
 # In[26]:
 
 
-img_surf(kernel_gaussiano(I, kind='bandpass', sigma=200, w=40))
+help(FiltraGaussiana)
 
 
-# In[28]:
+# In[47]:
 
 
-plt.imshow(I, cmap='gray')
+import hola
+
+
+# In[57]:
+
+
+hola.hola()
+
+
+# In[49]:
+
+
+del hola
+
+
+# In[50]:
+
+
+import importlib 
+
+
+# In[56]:
+
+
+import hola
+importlib.reload(hola)
+
+
+# In[54]:
+
+
+help(importlib.reload)
 
 
 # In[ ]:
