@@ -282,6 +282,10 @@ def _param_check2(form: str, Do: int) -> bool:
         
     """
     _forms = ['ideal', 'btw', 'butterworth', 'gauss', 'gaussian']
+
+    assert type(form) is str, f'form is of type {type(form)}, should be str.'
+    assert type(Do) is int, f'Do is of type {type(Do)}, should be int.'
+    
     form = form.lower()
     _form_check = form in _forms
     _dist_check = Do > 0
@@ -432,22 +436,28 @@ def kernel_lowpass(
     image: np.ndarray, 
     sigma: int = 15, 
      form: str = 'ideal',
-        w: int = None,
-      wc1: int = None, 
-      wc2: int = None,
+        n: int = None
 ) -> np.ndarray:
     """
     """
     
-    assert _param_check2(form, Do), 'Formulación del filtro o frecuencia de corte inválidas.'
+    form = form.lower()
+    assert _param_check2(form, sigma), 'Formulación del filtro o frecuencia de corte inválidas.'
     
+    Do = sigma
     U, V = fourier_meshgrid(image)
     D = fourier_distance(U, V)
     H = np.zeros_like(D)
     
-    
+    if form == 'ideal':
         _mask = np.nonzero(D <= Do)
         H[_mask] = 1.0
+    elif 'gauss' in form:
+        H = np.exp( (-1.0 * D) / (2.0 * sigma**2) )
+    else:
+        assert n is not None, f'Por favor indique un valor para n'
+        assert type(n) is int and n in range(1, 10+1), f'n = {n} no es válido. n debe estar en [1, 10]'
+        H = 1.0 / ( 1.0 + (D / Do**2)**n )
     
     return H
 ##

@@ -31,7 +31,7 @@ import skimage.morphology
 import skimage.filters
 
 
-# In[6]:
+# In[27]:
 
 
 # Importamos todas nuestras funciones :
@@ -64,6 +64,18 @@ plt.imshow(I, cmap='gray')
 
 
 fft_viz(I)
+
+
+# In[34]:
+
+
+img_surf(kernel_lowpass(I, sigma=500, form='btw', n=2))
+
+
+# In[21]:
+
+
+plt.imshow(kernel_ideal(I, Do=500), cmap='gray')
 
 
 # In[ ]:
