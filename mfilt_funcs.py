@@ -25,6 +25,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from matplotlib import cm
 
+import matplotlib
 import skimage
 import skimage.morphology
 import skimage.filters
@@ -33,7 +34,10 @@ import skimage.filters
 eps = np.finfo(float).eps
 eps.setflags(write=False)
 
-def img_surf(image: np.ndarray) -> None:
+def img_surf(
+       image: np.ndarray,
+    colormap: matplotlib.colors.LinearSegmentedColormap = cm.viridis
+) -> None:
     """
     """
     fig  = plt.figure()
@@ -43,7 +47,7 @@ def img_surf(image: np.ndarray) -> None:
     #U, V = fourier_meshgrid(image)
     #print(f'Shapes X:{X.shape}\n Y:{Y.shape}\n Z:{Z.shape}')
 
-    surf = ax.plot_surface(X, Y, image.T, cmap=cm.coolwarm,
+    surf = ax.plot_surface(X, Y, image.T, cmap=colormap,
                             linewidth=0, antialiased=False)
     
     plt.show()
@@ -416,9 +420,17 @@ def distance_meshgrid_2D(image: np.ndarray) -> np.ndarray:
     return _dd
 ##
 
-def master_filter():
+def master_kernel():
     """
+        Dados:
+            una imagen
+            un tipo de filtro (lowpass, highpass, bandpass, bandreject, notch)
+            una folrmulación
+            los parámetros de diseño necesarios
+        
+        Calcula un kernel de acuerdo a todas las especificaciones dadas.
     """
+    
     pass
 ##
     

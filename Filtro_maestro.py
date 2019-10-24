@@ -7,7 +7,7 @@
 # ### Profesor : Dr. Arturo González Vega
 # ### Alumno : Gustavo Magaña López
 
-# In[92]:
+# In[1]:
 
 
 
@@ -35,7 +35,7 @@ from PIL import Image
 import scipy.io as io
 
 
-# In[156]:
+# In[42]:
 
 
 # Importamos todas nuestras funciones :
@@ -44,46 +44,52 @@ importlib.reload(mine)
 from mfilt_funcs import *
 
 
-# In[99]:
+# In[3]:
 
 
 def black_and_white(input_image_path):
    return Image.open(input_image_path).convert('L')
 
 
-# In[105]:
+# In[4]:
 
 
 plt.rcParams['figure.figsize'] = (10, 10)
 
 
-# In[8]:
+# In[5]:
 
 
 eps = np.finfo(float).eps
 eps.setflags(write=False)
 
 
-# In[9]:
+# In[6]:
 
 
 I = img.imread('imagenes/mama.tif')
 plt.imshow(I, cmap='gray')
 
 
-# In[10]:
+# In[7]:
 
 
 fft_viz(I)
 
 
-# In[83]:
+# In[18]:
 
 
-HighI = kernel_highpass(pre_fft_processing(I), sigma=150, form='btw', n=7)
+img_surf(I)
 
 
-# In[84]:
+# In[16]:
+
+
+HighI = kernel_highpass(pre_fft_processing(I), Do=1500, form='gauss')
+
+
+# In[17]:
 
 
 img_surf(HighI)
@@ -107,31 +113,31 @@ list(map(cv2.getOptimalDFTSize, I.shape))
 I.shape
 
 
-# In[65]:
+# In[19]:
 
 
 newI = pre_fft_processing(I)
 
 
-# In[101]:
+# In[20]:
 
 
 x = black_and_white('imagenes/RadiografiaRuidoCoherente.jpg')
 
 
-# In[102]:
+# In[21]:
 
 
 #io.m
 
 
-# In[103]:
+# In[22]:
 
 
 plt.imshow(x, cmap='gray')
 
 
-# In[107]:
+# In[23]:
 
 
 fft_viz(x)
@@ -143,13 +149,13 @@ fft_viz(x)
 x.shape
 
 
-# In[91]:
+# In[24]:
 
 
-help(plt.imread)
+#help(plt.imread)
 
 
-# In[108]:
+# In[25]:
 
 
 """
@@ -159,7 +165,7 @@ help(plt.imread)
 I
 
 
-# In[109]:
+# In[26]:
 
 
 U, V = fourier_meshgrid(I)
@@ -167,34 +173,52 @@ D = fourier_distance(U, V)
 H = np.zeros_like(D)
 
 
-# In[120]:
+# In[27]:
 
 
 dd = (D / D.max())*255
 
 
-# In[123]:
+# In[28]:
 
 
 di = np.uint8(dd)
 
 
-# In[131]:
+# In[29]:
 
 
 img_surf(distance_meshgrid_2D(I))
 
 
-# In[158]:
+# In[30]:
 
 
 plt.imshow(kernel_band_pass(I, wc1=201, wc2=500, form='btw'), cmap='gray')
 
 
-# In[147]:
+# In[56]:
 
 
-plt.imshow(kernel_highpass(I, form='gauss', Do=64), cmap='gray')
+img_surf(kernel_lowpass(I, form='btw', Do=640, n=9), colormap=cm.viridis)
+
+
+# In[ ]:
+
+
+img_surf(ker )
+
+
+# In[40]:
+
+
+dir(cm)
+
+
+# In[41]:
+
+
+type(cm.coolwarm)
 
 
 # In[ ]:
