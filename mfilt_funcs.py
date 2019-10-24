@@ -439,6 +439,7 @@ def kernel_lowpass(
         n: int = None
 ) -> np.ndarray:
     """
+        Diseña un filtro pasa bajos.
     """
     
     form = form.lower()
@@ -460,6 +461,19 @@ def kernel_lowpass(
         H = 1.0 / ( 1.0 + (D / Do**2)**n )
     
     return H
+##
+
+def kernel_highpass(
+    image: np.ndarray,
+    sigma: int = 15,
+     form: str = 'ideal',
+        n: int = None
+) -> np.ndarray:
+    """
+        Diseña un filtro pasa altos.
+    """
+    
+    return 1.0 - kernel_lowpass(image, sigma=sigma, form=form, n=n)
 ##
 
 def muestra_kernels_gaussianos(
