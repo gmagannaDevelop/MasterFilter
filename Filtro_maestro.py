@@ -35,7 +35,7 @@ from PIL import Image
 import scipy.io as io
 
 
-# In[70]:
+# In[145]:
 
 
 # Importamos todas nuestras funciones :
@@ -131,7 +131,7 @@ x = black_and_white('imagenes/RadiografiaRuidoCoherente.jpg')
 plt.imshow(x, cmap='gray')
 
 
-# In[106]:
+# In[107]:
 
 
 fft_viz(x)
@@ -149,11 +149,56 @@ x.shape
 help(plt.imread)
 
 
-# In[ ]:
+# In[108]:
 
 
 """
     Ideas = crear una matriz de desplazamientos.
     
 """
+I
+
+
+# In[109]:
+
+
+U, V = fourier_meshgrid(I)
+D = fourier_distance(U, V)
+H = np.zeros_like(D)
+
+
+# In[120]:
+
+
+dd = (D / D.max())*255
+
+
+# In[123]:
+
+
+di = np.uint8(dd)
+
+
+# In[131]:
+
+
+img_surf(distance_meshgrid_2D(I))
+
+
+# In[141]:
+
+
+plt.imshow(kernel_band_reject(I, wc1=201, wc2=500), cmap='gray')
+
+
+# In[147]:
+
+
+plt.imshow(kernel_highpass(I, form='gauss', Do=64), cmap='gray')
+
+
+# In[ ]:
+
+
+
 

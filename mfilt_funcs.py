@@ -12,7 +12,7 @@
 
 
 import copy
-from typing import Tuple, List
+from typing import Tuple, List, NoReturn
 
 import numpy as np
 import scipy.fftpack as F
@@ -267,9 +267,11 @@ def _param_check2(form: str, Do: int) -> bool:
         esta función verifica que :
         1.- La formulación de filtro especificada, 'form' se válida
             i.e. Alguna de las siguientes :
+            
             'ideal', 'btw', 'butterworth', 'gauss', 'gaussian'
 
         2.- Que el parámetro `frecuencia de corte`, es decir
+        
             'Do' o 'sigma', sea positivo.
     
     Parámetros :
@@ -434,7 +436,7 @@ def kernel_gaussiano(
 
 def kernel_lowpass(
     image: np.ndarray, 
-    sigma: int = 15, 
+       Do: int = 15,
      form: str = 'ideal',
         n: int = None
 ) -> np.ndarray:
@@ -443,9 +445,8 @@ def kernel_lowpass(
     """
     
     form = form.lower()
-    assert _param_check2(form, sigma), 'Formulación del filtro o frecuencia de corte inválidas.'
+    assert _param_check2(form, Do), 'Formulación del filtro o frecuencia de corte inválidas.'
     
-    Do = sigma
     U, V = fourier_meshgrid(image)
     D = fourier_distance(U, V)
     H = np.zeros_like(D)
@@ -454,7 +455,7 @@ def kernel_lowpass(
         _mask = np.nonzero(D <= Do)
         H[_mask] = 1.0
     elif 'gauss' in form:
-        H = np.exp( (-1.0 * D) / (2.0 * sigma**2) )
+        H = np.exp( (-1.0 * D) / (2.0 * Do**2) )
     else:
         if n is None:
             n = 1
@@ -468,7 +469,7 @@ def kernel_lowpass(
 
 def kernel_highpass(
     image: np.ndarray,
-    sigma: int = 15,
+       Do: int = 15,
      form: str = 'ideal',
         n: int = None
 ) -> np.ndarray:
@@ -476,14 +477,70 @@ def kernel_highpass(
         Diseña un filtro pasa altos.
     """
     
-    return 1.0 - kernel_lowpass(image, sigma=sigma, form=form, n=n)
+    return 1.0 - kernel_lowpass(image, Do=Do, form=form, n=n)
+##
+
+def kernel_band_reject(
+    image: np.ndarray,
+       Do: int = 50,
+        w: int = 15,
+      wc1: int = None,
+      wc2: int = None,
+     form: str = 'ideal',
+        n: int = None
+) -> np.ndarray:
+    """
+        Diseña un filtro de rechazo de banda.
+    """
+    
+    if wc1 and wc2:
+        assert type(wc1) is int and type(wc2) is int,\
+            f'Argumentos wc1 y wc2 deben ser de tipo entero, no : {type(wc1)}, {type(wc2)}'
+        assert wc1 < wc2,\
+            f'Valores wc1 = {wc1}, wc2 = {wc2} no cumplen wc1 < wc2.'
+        Do = np.ceil( (wc1 + wc2) / 2 )
+        w  = wc2 - wc1
+    else:
+        assert type(Do) is int and type(w) is int,\
+            f'Argumentos Do y w deben ser de tipo entero, no : {type(wc1)}, {type(wc2)}'
+
+    assert _param_check2(form, int(Do)), 'Formulación de filtro inválida.'
+    U, V = fourier_meshgrid(image)
+    D = fourier_distance(U, V)
+    H = np.ones_like(D)
+
+    form = form.lower()
+    if form == 'ideal':
+        _mask = np.nonzero( (D >= Do - w/2) & (D <= Do + w/2))
+        H[_mask] = 0.0
+    elif form == 'btw' or form == 'butterworth':
+        H = 1.0 / (1.0 + ( w**2 * D / (D - Do**2 + eps)**2 )**n )
+    elif 'gauss' in form:
+        H = 1.0 - np.exp(-1.0 * (D - Do**2)**2 / (w**2 * D) )
+    else:
+        pass
+
+    return H
+##
+
+def distance_meshgrid_2D(image: np.ndarray) -> np.ndarray:
+    """
+        Genera una proyección visualizable de las distancias
+        dentro de una meshgrid, respecto al centro.
+    """
+    _U, _V = fourier_meshgrid(image)
+    _D  = fourier_distance(_U, _V)
+    _H  = np.zeros_like(_D)
+    _dd = (_D / _D.max())* 255
+    _di = np.uint8(_dd)
+    return _dd
 ##
 
 def muestra_kernels_gaussianos(
     sigma: int = 16, 
       wc1: int = 54, 
       wc2: int = 74,
-) -> None:
+) -> NoReturn:
     """
     """
     
