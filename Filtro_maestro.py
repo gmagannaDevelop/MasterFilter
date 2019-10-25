@@ -7,13 +7,13 @@
 # ### Profesor : Dr. Arturo González Vega
 # ### Alumno : Gustavo Magaña López
 
-# In[1]:
+# In[36]:
 
 
 
 import copy
 import importlib
-from typing import Tuple, List
+from typing import Tuple, List, NoReturn
 
 import numpy as np
 import scipy.fftpack as F
@@ -35,7 +35,33 @@ from PIL import Image
 import scipy.io as io
 
 
-# In[2]:
+# In[40]:
+
+
+def reimport(module_name: str, alias: str = None, partial: bool = False) -> NoReturn:
+    """
+        Useless piece of code, literally.
+    """
+    _exec_str: str = ''
+    
+    if alias and not partial:
+        _exec_str  = f"import {module_name} as {alias}\n"
+        _exec_str += f"importlib.reload({alias})\n"
+        _exec_str += f"from {module_name} import * \n"
+    elif alias and partial:
+        _exec_str  = f"import {module_name} as {alias}\n"
+        _exec_str += f"importlib.reload({alias})\n"
+    elif not alias and not partial:
+        _exec_str  = f"import {module_name} as __reimport_tmp\n"
+        _exec_str += f"importlib.reload(__reimport_tmp)\n"
+        _exec_str += f"from {module_name} import * \n"
+        
+    exec(_exec_str)
+
+##
+
+
+# In[48]:
 
 
 # Importamos todas nuestras funciones (le Gus):
@@ -53,157 +79,130 @@ importlib.reload(lapats)
 from filtro_notch import *
 
 
-# In[3]:
+# In[4]:
 
 
 def black_and_white(input_image_path):
    return Image.open(input_image_path).convert('L')
 
 
-# In[4]:
+# In[5]:
 
 
 plt.rcParams['figure.figsize'] = (10, 10)
 
 
-# In[5]:
+# In[6]:
 
 
 eps = np.finfo(float).eps
 eps.setflags(write=False)
 
 
-# In[6]:
+# In[7]:
 
 
 I = img.imread('imagenes/mama.tif')
 plt.imshow(I, cmap='gray')
 
 
-# In[7]:
+# In[8]:
 
 
 fft_viz(I)
 
 
-# In[18]:
+# In[9]:
 
 
 img_surf(I)
 
 
-# In[16]:
+# In[10]:
 
 
 HighI = kernel_highpass(pre_fft_processing(I), Do=1500, form='gauss')
 
 
-# In[17]:
+# In[11]:
 
 
 img_surf(HighI)
 
 
-# In[85]:
+# In[12]:
 
 
 plt.imshow(HighI, cmap='gray')
 
 
-# In[60]:
+# In[13]:
 
 
 list(map(cv2.getOptimalDFTSize, I.shape))
 
 
-# In[62]:
+# In[14]:
 
 
 I.shape
 
 
-# In[19]:
+# In[15]:
 
 
 newI = pre_fft_processing(I)
 
 
-# In[20]:
+# In[16]:
 
 
 x = black_and_white('imagenes/RadiografiaRuidoCoherente.jpg')
 
 
-# In[21]:
+# In[17]:
 
 
 #io.m
 
 
-# In[22]:
+# In[18]:
 
 
 plt.imshow(x, cmap='gray')
 
 
-# In[23]:
+# In[19]:
 
 
 fft_viz(x)
 
 
-# In[89]:
-
-
-x.shape
-
-
-# In[24]:
-
-
-#help(plt.imread)
-
-
-# In[25]:
+# In[22]:
 
 
 """
     Ideas = crear una matriz de desplazamientos.
     
 """
-I
 
 
-# In[26]:
-
-
-U, V = fourier_meshgrid(I)
-D = fourier_distance(U, V)
-H = np.zeros_like(D)
-
-
-# In[27]:
-
-
-dd = (D / D.max())*255
-
-
-# In[28]:
-
-
-di = np.uint8(dd)
-
-
-# In[29]:
+# In[23]:
 
 
 img_surf(distance_meshgrid_2D(I))
 
 
-# In[30]:
+# In[26]:
 
 
-plt.imshow(kernel_band_pass(I, wc1=201, wc2=500, form='btw'), cmap='gray')
+plt.imshow(I, cmap='gray')
+
+
+# In[25]:
+
+
+plt.imshow(kernel_highpass(I, Do=500, form='ideal'), cmap='gray')
 
 
 # In[56]:
@@ -230,7 +229,7 @@ dir(cm)
 type(cm.coolwarm)
 
 
-# In[63]:
+# In[29]:
 
 
 aiuto = aiuda = jelp = help
@@ -246,6 +245,24 @@ aiuda(kernel_ideal)
 
 
 kernel_ideal(I.shape[0], I.shape[1], 0, (100, 400), 0, 100)
+
+
+# In[30]:
+
+
+aiuto(master_kernel)
+
+
+# In[44]:
+
+
+reimport('mfilt_funcs')
+
+
+# In[55]:
+
+
+plt.imshow(master_kernel(I, Do=100, kind='high', form='gauss'), cmap='gray')
 
 
 # In[ ]:

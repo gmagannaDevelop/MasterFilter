@@ -442,7 +442,7 @@ def master_kernel(
     ## insert all pertinent param_checks : 
     ##
 
-    H = np.zeroslilke(image)
+    H = np.zeros_like(image)
 
     if 'low' in kind:
         H = kernel_lowpass(image, Do=Do, form=form, n=n)
