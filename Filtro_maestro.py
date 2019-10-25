@@ -154,19 +154,19 @@ I.shape
 newI = pre_fft_processing(I)
 
 
-# In[16]:
+# In[57]:
 
 
 x = black_and_white('imagenes/RadiografiaRuidoCoherente.jpg')
 
 
-# In[17]:
+# In[58]:
 
 
 #io.m
 
 
-# In[18]:
+# In[59]:
 
 
 plt.imshow(x, cmap='gray')
@@ -263,6 +263,12 @@ reimport('mfilt_funcs')
 
 
 plt.imshow(master_kernel(I, Do=100, kind='high', form='gauss'), cmap='gray')
+
+
+# In[63]:
+
+
+fft_viz(x)
 
 
 # In[ ]:
