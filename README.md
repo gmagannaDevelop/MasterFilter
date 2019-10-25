@@ -1,4 +1,26 @@
 # MasterFilter
+
+## Requerimientos y dependencias :
+
+### Preparar el entorno de ejecución usando  `conda`
+Para poder ejecutar el código de este repositorio, de la misma forma en la cual fue desarrollado, 
+es necesario usar un ambiente virtual de Anaconda.
+[conda environment](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)
+[Anaconda distribution](https://www.anaconda.com/distribution/).
+ 
+To install the environment make sure you have [conda](https://conda.io/en/latest/) installed, then run the following
+ 
+    conda env create -f segnet_env.yml
+ 
+this should ask you to confirm the installation, say yes and proceed with the installation. 
+After that, activate the newly created environment
+
+     conda activate segnet
+ 
+and now you are ready to run the code within this repository.
+
+
+## Indicaciones de la tarea :
 Fundamentos de procesamiento digital de imágenes : Funciones de filtrado en frecuencia
 
 1. ( 2 puntos) Modificar las funciones vistas en clase que generan filtros de tipo ideal de la forma pasa-bajos, pasa-altos, pasa-bandas rechazo de bandas, generalizandolas para que se indique si el filtro es ideal, Gaussinao o de Butterworth
