@@ -478,7 +478,44 @@ def master_kernel(
     return H
 ##
     
-    
+def filtra_maestra(
+    image: np.ndarray,
+       Do: int = 50,
+        w: int = 15,
+      wc1: int = None,
+      wc2: int = None,
+     kind: str = 'low',
+     form: str = 'ideal',
+   center: Tuple[int] = (0, 0),
+        n: int = 1
+) -> np.ndarray:
+    """
+        Diseña y aplica un filtro.
+        Envoltura para master_kernel(*args, **kw)
+        
+        return FFT
+
+    """
+
+    kernel = master_kernel(
+           image,
+           Do = Do,
+            w = w,
+          wc1 = wc1,
+          wc2 = wc2,
+         kind = kind,
+         form = form,
+       center = center,
+            n = n
+    ) 
+
+    transformada = np.fft.fftshift(np.fft.fft2(image))
+    aplico_filtro = kernel * transformada
+    img_filtrada = np.real(np.fft.ifft2(np.fft.ifftshift(aplico_filtro)))
+
+    return img_filtrada
+##
+
 def __FiltraGaussiana(image: np.ndarray, sigma: float, kind: str = 'low') -> np.ndarray:
     """
         DO NOT USE THIS FUNCTION !

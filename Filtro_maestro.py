@@ -61,7 +61,7 @@ def reimport(module_name: str, alias: str = None, partial: bool = False) -> NoRe
 ##
 
 
-# In[113]:
+# In[119]:
 
 
 # Importamos todas nuestras funciones (le Gus):
@@ -301,6 +301,15 @@ my_kern.
 
 
 plt.imshow(master_kernel(I, Do=10, center=(14, 55), kind='notchpass', form='btw'), cmap='gray')
+
+
+# In[120]:
+
+
+plt.imshow(
+    filtra_maestra(I, Do=64),
+    cmap='gray'
+)
 
 
 # In[ ]:
