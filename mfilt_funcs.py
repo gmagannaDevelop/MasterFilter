@@ -31,12 +31,19 @@ eps.setflags(write=False)
 
 def img_surf(
        image: np.ndarray,
-    colormap: matplotlib.colors.LinearSegmentedColormap = cm.viridis
+    colormap: matplotlib.colors.LinearSegmentedColormap = cm.viridis,
+   la_figura: matplotlib.figure.Figure = None
 ) -> None:
     """
     """
-    fig  = plt.figure()
-    ax   = fig.gca(projection='3d')
+
+    if type(la_figura) is not None:
+        fig  = plt.figure()
+        ax   = fig.gca(projection='3d')
+    else:
+        fig = la_figura
+        ax  = fig.gca(projection='3d')
+
     x, y = list(map(lambda x: np.arange(0, x), image.shape))
     X, Y = np.meshgrid(x, y)
     #U, V = fourier_meshgrid(image)
@@ -44,8 +51,8 @@ def img_surf(
 
     surf = ax.plot_surface(X, Y, image.T, cmap=colormap,
                             linewidth=0, antialiased=False)
-    
-    plt.show()
+    return surf
+    # plt.show()
 ##
 
 def img_fft(image: np.ndarray, shift: bool = True) -> np.ndarray:
@@ -72,13 +79,17 @@ def img_fft(image: np.ndarray, shift: bool = True) -> np.ndarray:
     return _X_img
 ##
 
-def fft_viz(image: np.ndarray, shift: bool = True) -> None:
+def fft_viz(
+    image: np.ndarray, 
+    shift: bool = True, 
+   newfig: bool = False
+) -> None:
     """
         Ver la transformada de fourier de una imagen.
     """
-    plt.figure()
-    plt.imshow(img_fft(image, shift=shift), cmap='gray')
-    plt.show()
+    if newfig:
+        plt.figure()
+    return plt.imshow(img_fft(image, shift=shift), cmap='gray')
 ##
 
 def pre_fft_processing(

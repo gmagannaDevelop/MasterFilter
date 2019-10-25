@@ -35,7 +35,7 @@ from PIL import Image
 import scipy.io as io
 
 
-# In[19]:
+# In[54]:
 
 
 # Importamos todas nuestras funciones:
@@ -44,51 +44,75 @@ importlib.reload(mine)
 from mfilt_funcs import *
 
 
-# In[3]:
+# In[59]:
 
 
-plt.rcParams['figure.figsize'] = (5, 5)
+def plot_all(image, **kw): 
+    """
+    """
+    
+    fig = plt.figure(figsize = (15, 10))
+    H = master_kernel(image, **kw)
+    filtrada = filtra_maestra(image, **kw)
+    
+    fig.add_subplot(2, 3, 1)
+    plt.imshow(image, cmap = 'gray')
+    plt.title('Imagen original', size = 18)
+    
+    fig.add_subplot(2, 3, 2)
+    fft_viz(image)
+    plt.title('Transformada de la imagen', size = 18)
+    
+    fig.add_subplot(2, 3, 3)
+    plt.imshow(filtrada, cmap = 'gray')
+    plt.title(f'Imagen filtrada.', size = 18)
 
 
-# In[4]:
+# In[74]:
+
+
+plt.rcParams['figure.figsize'] = (10, 10)
+
+
+# In[75]:
 
 
 eps = np.finfo(float).eps
 eps.setflags(write=False)
 
 
-# In[5]:
+# In[76]:
 
 
 I = img.imread('imagenes/mama.tif')
 plt.imshow(I, cmap='gray')
 
 
-# In[6]:
+# In[77]:
 
 
 fft_viz(I)
 
 
-# In[7]:
+# In[78]:
 
 
 img_surf(I)
 
 
-# In[8]:
+# In[79]:
 
 
 x = cv2.imread('imagenes/RadiografiaRuidoCoherente.jpg', 0)
 
 
-# In[9]:
+# In[80]:
 
 
 plt.imshow(x, cmap='gray')
 
 
-# In[10]:
+# In[81]:
 
 
 fft_viz(x)
@@ -102,68 +126,74 @@ img_surf(x)
 
 # ### 5.1 Filtro pasa bajos ideal con wc=64,
 
-# In[12]:
+# In[67]:
 
 
-plt.imshow(
-    filtra_maestra(I, Do=64, kind='lowpass', form='ideal'),
-    cmap='gray'
-)
+banderas = dict(Do=64, kind='lowpass', form='ideal')
+plot_all(I, **banderas)
 
 
 # ### 5.2 Filtro pasa bajos butt con wc=64, orden=2
 
-# In[13]:
+# In[66]:
 
 
-plt.imshow(
-    filtra_maestra(I, Do=64, kind='lowpass', form='btw', n=2),
-    cmap='gray'
-)
+banderas = dict(Do=64, kind='lowpass', form='btw', n=2)
+plot_all(I, **banderas)
 
 
 # ### 5.3 Filtro pasa bajos gauss con wc=64
 
-# In[15]:
+# In[65]:
 
 
-plt.imshow(
-    filtra_maestra(I, Do=64, kind='lowpass', form='gauss'),
-    cmap='gray'
-)
+banderas = dict(Do=64, kind='lowpass', form='gauss')
+plot_all(I, **banderas)
 
 
 # ### 5.4 Filtro pasa altos gauss con wc=64
 
-# In[17]:
+# In[63]:
 
 
-plt.imshow(
-    filtra_maestra(I, Do=64, kind='highpass', form='gauss'),
-    cmap='gray'
-)
+banderas = dict(Do=64, kind='highpass', form='gauss')
+plot_all(I, **banderas)
 
 
 # ### 5.5 Filtro pasa bandas gauss con wc1=54, wc2=74
 
-# In[20]:
+# In[62]:
 
 
-plt.imshow(
-    filtra_maestra(I, wc1=54, wc2=74, kind='bandpass', form='gauss'),
-    cmap='gray'
-)
+banderas = dict(wc1=54, wc2=74, kind='bandpass', form='gauss')
+plot_all(I, **banderas)
 
 
 # ### 5.6 Filtro rechazo de bandas gauss con wc1=54, wc2=74
 
-# In[22]:
+# In[61]:
 
 
-plt.imshow(
-    filtra_maestra(I, wc1=54, wc2=74, kind='bandreject', form='gauss'),
-    cmap='gray'
-)
+banderas = dict(wc1=54, wc2=74, kind='bandreject', form='gauss')
+plot_all(I, **banderas)
+
+
+# In[73]:
+
+
+img_surf(master_kernel(I, kind='bandreject', form='btw', wc1=100, wc2=250, n=2))
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
 
 
 # In[ ]:

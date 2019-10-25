@@ -2,8 +2,16 @@
 
 Proyecto colaborativo entre [Gustavo Magaña López](https://github.com/gmagannaDevelop) y [Salma Patricia Gutiérrez Rivera ](https://github.com/Pagutri).
 
+Universidad de Guanajuato
+
+Campus Léon
+
+División de Ciencias e ingenierías
+
 Tarea : Funciones de Filtrado en Frecuencia
+
 Materia : Fundamentos de procesamiento digital de imágenes.
+
 Profesor :  Dr. Arturo González Vega
 
 ## Requerimientos y dependencias :
