@@ -7,7 +7,7 @@
 # ### Profesor : Dr. Arturo González Vega
 # ### Alumno : Gustavo Magaña López
 
-# In[36]:
+# In[1]:
 
 
 
@@ -35,7 +35,7 @@ from PIL import Image
 import scipy.io as io
 
 
-# In[40]:
+# In[2]:
 
 
 def reimport(module_name: str, alias: str = None, partial: bool = False) -> NoReturn:
@@ -61,7 +61,7 @@ def reimport(module_name: str, alias: str = None, partial: bool = False) -> NoRe
 ##
 
 
-# In[48]:
+# In[51]:
 
 
 # Importamos todas nuestras funciones (le Gus):
@@ -70,115 +70,117 @@ importlib.reload(mine)
 from mfilt_funcs import *
 
 
-# In[3]:
+# In[4]:
 
 
 # Importamos todas nuestras funciones (la Pats):
+"""
 import filtro_notch as lapats
 importlib.reload(lapats)
 from filtro_notch import *
+"""
 
 
-# In[4]:
+# In[5]:
 
 
 def black_and_white(input_image_path):
    return Image.open(input_image_path).convert('L')
 
 
-# In[5]:
+# In[6]:
 
 
 plt.rcParams['figure.figsize'] = (10, 10)
 
 
-# In[6]:
+# In[7]:
 
 
 eps = np.finfo(float).eps
 eps.setflags(write=False)
 
 
-# In[7]:
+# In[8]:
 
 
 I = img.imread('imagenes/mama.tif')
 plt.imshow(I, cmap='gray')
 
 
-# In[8]:
+# In[9]:
 
 
 fft_viz(I)
 
 
-# In[9]:
+# In[10]:
 
 
 img_surf(I)
 
 
-# In[10]:
+# In[11]:
 
 
 HighI = kernel_highpass(pre_fft_processing(I), Do=1500, form='gauss')
 
 
-# In[11]:
+# In[12]:
 
 
 img_surf(HighI)
 
 
-# In[12]:
+# In[13]:
 
 
 plt.imshow(HighI, cmap='gray')
 
 
-# In[13]:
+# In[14]:
 
 
 list(map(cv2.getOptimalDFTSize, I.shape))
 
 
-# In[14]:
+# In[15]:
 
 
 I.shape
 
 
-# In[15]:
+# In[16]:
 
 
 newI = pre_fft_processing(I)
 
 
-# In[57]:
+# In[41]:
 
 
-x = black_and_white('imagenes/RadiografiaRuidoCoherente.jpg')
+x = cv2.imread('imagenes/RadiografiaRuidoCoherente.jpg', 0)
 
 
-# In[58]:
+# In[42]:
 
 
 #io.m
 
 
-# In[59]:
+# In[43]:
 
 
 plt.imshow(x, cmap='gray')
 
 
-# In[19]:
+# In[44]:
 
 
 fft_viz(x)
 
 
-# In[22]:
+# In[21]:
 
 
 """
@@ -187,25 +189,25 @@ fft_viz(x)
 """
 
 
-# In[23]:
+# In[22]:
 
 
 img_surf(distance_meshgrid_2D(I))
 
 
-# In[26]:
+# In[23]:
 
 
 plt.imshow(I, cmap='gray')
 
 
-# In[25]:
+# In[24]:
 
 
 plt.imshow(kernel_highpass(I, Do=500, form='ideal'), cmap='gray')
 
 
-# In[56]:
+# In[25]:
 
 
 img_surf(kernel_lowpass(I, form='btw', Do=640, n=9), colormap=cm.viridis)
@@ -214,16 +216,16 @@ img_surf(kernel_lowpass(I, form='btw', Do=640, n=9), colormap=cm.viridis)
 # In[ ]:
 
 
-img_surf(ker )
+
 
 
 # In[40]:
 
 
-dir(cm)
+#dir(cm)
 
 
-# In[41]:
+# In[28]:
 
 
 type(cm.coolwarm)
@@ -235,40 +237,52 @@ type(cm.coolwarm)
 aiuto = aiuda = jelp = help
 
 
-# In[64]:
+# In[30]:
 
 
 aiuda(kernel_ideal)
 
 
-# In[66]:
+# In[32]:
 
 
-kernel_ideal(I.shape[0], I.shape[1], 0, (100, 400), 0, 100)
+#kernel_ideal(I.shape[0], I.shape[1], 0, (100, 400), 0, 100)
 
 
-# In[30]:
+# In[33]:
 
 
 aiuto(master_kernel)
 
 
-# In[44]:
+# In[34]:
 
 
 reimport('mfilt_funcs')
 
 
-# In[55]:
+# In[35]:
 
 
 plt.imshow(master_kernel(I, Do=100, kind='high', form='gauss'), cmap='gray')
 
 
-# In[63]:
+# In[36]:
 
 
 fft_viz(x)
+
+
+# In[60]:
+
+
+plt.imshow(kernel_notch(x, d0=30, centro=(20, 30), tipo='tu abuela', n=6), cmap='gray')
+
+
+# In[39]:
+
+
+type(x)
 
 
 # In[ ]:
