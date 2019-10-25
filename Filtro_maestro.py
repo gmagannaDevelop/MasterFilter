@@ -178,6 +178,28 @@ banderas = dict(wc1=54, wc2=74, kind='bandreject', form='gauss')
 plot_all(I, **banderas)
 
 
+# In[82]:
+
+
+cabeza = plt.imread('imagenes/FigP0405(HeadCT_corrupted).tif')
+
+
+# ### Notch reject, Do = 5, center = (0, 20), form='ideal'
+
+# In[86]:
+
+
+banderas = dict(kind='notchreject', Do=5, center=(0, 20))
+plot_all(cabeza, **banderas)
+
+
+# In[88]:
+
+
+banderas = dict(kind='notchreject', Do=5, center=(11, 0), form='gauss')
+plot_all(cabeza, **banderas)
+
+
 # In[73]:
 
 
