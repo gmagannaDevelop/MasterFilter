@@ -440,14 +440,6 @@ def master_kernel(
             los parámetros de diseño necesarios
         
         Calcula (diseña) un kernel de acuerdo a todas las especificaciones dadas.
-
-        def kernel_notch(img, d0, centro = (0, 0), tipo = 0, pasa = 0, n = 1):
-            Filtro notch. 
-            tipo = 0 para ideal, 1 para gaussiano y cualquier otro valor para butterworth.
-            pasa = 0 para notchreject, 1 para notchpass.
-            centro y radio son los del notch. notch simétrico automático.
-            Especificar n solo para butterworth
-
     """
 
     assert _param_check(kind, Do), f'Invalid filter kind : `{kind}`, see help(mfilt_funcs._param_check)'
