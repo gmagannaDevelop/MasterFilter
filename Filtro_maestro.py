@@ -35,13 +35,22 @@ from PIL import Image
 import scipy.io as io
 
 
-# In[42]:
+# In[2]:
 
 
-# Importamos todas nuestras funciones :
+# Importamos todas nuestras funciones (le Gus):
 import mfilt_funcs as mine
 importlib.reload(mine)
 from mfilt_funcs import *
+
+
+# In[3]:
+
+
+# Importamos todas nuestras funciones (la Pats):
+import filtro_notch as lapats
+importlib.reload(lapats)
+from filtro_notch import *
 
 
 # In[3]:
@@ -219,6 +228,24 @@ dir(cm)
 
 
 type(cm.coolwarm)
+
+
+# In[63]:
+
+
+aiuto = aiuda = jelp = help
+
+
+# In[64]:
+
+
+aiuda(kernel_ideal)
+
+
+# In[66]:
+
+
+kernel_ideal(I.shape[0], I.shape[1], 0, (100, 400), 0, 100)
 
 
 # In[ ]:
