@@ -35,7 +35,7 @@ from PIL import Image
 import scipy.io as io
 
 
-# In[54]:
+# In[2]:
 
 
 # Importamos todas nuestras funciones:
@@ -44,7 +44,7 @@ importlib.reload(mine)
 from mfilt_funcs import *
 
 
-# In[59]:
+# In[3]:
 
 
 def plot_all(image, **kw): 
@@ -68,57 +68,57 @@ def plot_all(image, **kw):
     plt.title(f'Imagen filtrada.', size = 18)
 
 
-# In[74]:
+# In[4]:
 
 
 plt.rcParams['figure.figsize'] = (10, 10)
 
 
-# In[75]:
+# In[5]:
 
 
 eps = np.finfo(float).eps
 eps.setflags(write=False)
 
 
-# In[76]:
+# In[6]:
 
 
 I = img.imread('imagenes/mama.tif')
 plt.imshow(I, cmap='gray')
 
 
-# In[77]:
+# In[7]:
 
 
 fft_viz(I)
 
 
-# In[78]:
+# In[8]:
 
 
 img_surf(I)
 
 
-# In[79]:
+# In[9]:
 
 
 x = cv2.imread('imagenes/RadiografiaRuidoCoherente.jpg', 0)
 
 
-# In[80]:
+# In[10]:
 
 
 plt.imshow(x, cmap='gray')
 
 
-# In[81]:
+# In[11]:
 
 
 fft_viz(x)
 
 
-# In[11]:
+# In[12]:
 
 
 img_surf(x)
@@ -126,7 +126,7 @@ img_surf(x)
 
 # ### 5.1 Filtro pasa bajos ideal con wc=64,
 
-# In[67]:
+# In[13]:
 
 
 banderas = dict(Do=64, kind='lowpass', form='ideal')
@@ -135,7 +135,7 @@ plot_all(I, **banderas)
 
 # ### 5.2 Filtro pasa bajos butt con wc=64, orden=2
 
-# In[66]:
+# In[14]:
 
 
 banderas = dict(Do=64, kind='lowpass', form='btw', n=2)
@@ -144,7 +144,7 @@ plot_all(I, **banderas)
 
 # ### 5.3 Filtro pasa bajos gauss con wc=64
 
-# In[65]:
+# In[15]:
 
 
 banderas = dict(Do=64, kind='lowpass', form='gauss')
@@ -153,7 +153,7 @@ plot_all(I, **banderas)
 
 # ### 5.4 Filtro pasa altos gauss con wc=64
 
-# In[63]:
+# In[16]:
 
 
 banderas = dict(Do=64, kind='highpass', form='gauss')
@@ -162,7 +162,7 @@ plot_all(I, **banderas)
 
 # ### 5.5 Filtro pasa bandas gauss con wc1=54, wc2=74
 
-# In[62]:
+# In[17]:
 
 
 banderas = dict(wc1=54, wc2=74, kind='bandpass', form='gauss')
@@ -171,34 +171,64 @@ plot_all(I, **banderas)
 
 # ### 5.6 Filtro rechazo de bandas gauss con wc1=54, wc2=74
 
-# In[61]:
+# In[18]:
 
 
 banderas = dict(wc1=54, wc2=74, kind='bandreject', form='gauss')
 plot_all(I, **banderas)
 
 
-# In[82]:
+# In[19]:
 
 
 cabeza = plt.imread('imagenes/FigP0405(HeadCT_corrupted).tif')
 
 
-# ### Notch reject, Do = 5, center = (0, 20), form='ideal'
-
-# In[86]:
+# In[20]:
 
 
-banderas = dict(kind='notchreject', Do=5, center=(0, 20))
+banderas = dict(kind='notchreject', Do=15, center=(0, 25))
 plot_all(cabeza, **banderas)
 
 
-# In[88]:
+# Eliminamos ruido vertical
+
+# In[22]:
 
 
-banderas = dict(kind='notchreject', Do=5, center=(11, 0), form='gauss')
+banderas = dict(kind='notchreject', Do=5, center=(20, 0), form='gauss')
 plot_all(cabeza, **banderas)
 
+
+# Eliminamos ruido horizontal.
+
+# In[24]:
+
+
+banderas = dict(kind='notchreject', Do=15, center=(46, 46))
+plot_all(cabeza, **banderas)
+
+
+# Eliminamos ruido diagonal.
+
+# In[25]:
+
+
+banderas_vertical   = dict(kind='notchreject', Do=15, center=(0, 25))
+banderas_horizontal = dict(kind='notchreject', Do=5, center=(20, 0), form='gauss')
+banderas_diagonal   = dict(kind='notchreject', Do=15, center=(46, 46))
+pre = filtra_maestra(
+    filtra_maestra(
+        cabeza, **banderas_vertical
+    ), **banderas_horizontal
+)
+plot_all(pre, **banderas_diagonal)
+
+
+# Con un poco de deformaión se logró eliminar el ruido periódico de la imagen.
+
+# ### Ejemplo de img_surf
+# Función definida en mfilt_funcs.py, permite representar una imagen (numpy.ndarray) como una superficie.
 
 # In[73]:
 
