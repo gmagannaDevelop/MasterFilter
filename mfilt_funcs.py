@@ -543,7 +543,7 @@ def kernel_butterworth(M, N, centro, d0, n):
     v_k = centro[1]
     u = np.arange(M)
     v = np.arange(N)
-    U, V = np.meshgrid(u, v)
+    V, U = np.meshgrid(v, u)
     
     D_k = np.square(U - 0.5 * M - u_k) + np.square(V - 0.5 * N - v_k)
     D_mk = np.square(U - 0.5 * M + u_k) + np.square(V - 0.5 * N + v_k)
@@ -560,7 +560,8 @@ def kernel_notch(img, d0, centro = (0, 0), tipo = 0, pasa = 0, n = 1):
     tipo = 0 para ideal, 1 para gaussiano y cualquier otro valor para butterworth.
     pasa = 0 para notchreject, 1 para notchpass.
     centro y radio son los del notch. notch simétrico automático.
-    Especificar n solo para butterworth"""
+    Especificar n solo para butterworth
+    """
     
     M, N = img.shape
     
@@ -571,6 +572,7 @@ def kernel_notch(img, d0, centro = (0, 0), tipo = 0, pasa = 0, n = 1):
     else:
         kernel_prov = kernel_butterworth(M, N, centro, d0, n)
     
-    return kernel_prov
+    kernel = pasa + (-1.0)**pasa * kernel_prov
+    return np.float64(kernel_prov)
 ##
 

@@ -61,7 +61,7 @@ def reimport(module_name: str, alias: str = None, partial: bool = False) -> NoRe
 ##
 
 
-# In[51]:
+# In[75]:
 
 
 # Importamos todas nuestras funciones (le Gus):
@@ -273,16 +273,34 @@ plt.imshow(master_kernel(I, Do=100, kind='high', form='gauss'), cmap='gray')
 fft_viz(x)
 
 
-# In[60]:
+# In[95]:
 
 
-plt.imshow(kernel_notch(x, d0=30, centro=(20, 30), tipo='tu abuela', n=6), cmap='gray')
+img_surf(kernel_notch(x, d0=15, centro=(100, 60), tipo=1, n=4))
 
 
-# In[39]:
+# In[77]:
 
 
-type(x)
+type(my_kern)
+
+
+# In[73]:
+
+
+np.float64(my_kern)
+
+
+# In[74]:
+
+
+my_kern.
+
+
+# In[100]:
+
+
+img_surf(master_kernel(I, wc1=100, wc2=300, kind='bandreject', form='gauss'))
 
 
 # In[ ]:
