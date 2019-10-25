@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # coding: utf-8
 
 # # División de Ciencias e Ingenierías de la Universidad de Guanajuato
@@ -420,7 +419,16 @@ def distance_meshgrid_2D(image: np.ndarray) -> np.ndarray:
     return _dd
 ##
 
-def master_kernel():
+def master_kernel(
+    image: np.ndarray,
+       Do: int = 50,
+        w: int = 15,
+      wc1: int = None,
+      wc2: int = None,
+     kind: str = 'low',
+     form: str = 'ideal',
+        n: int = 1
+) -> np.ndarray:
     """
         Dados:
             una imagen
@@ -428,16 +436,33 @@ def master_kernel():
             una folrmulación
             los parámetros de diseño necesarios
         
-        Calcula un kernel de acuerdo a todas las especificaciones dadas.
+        Calcula (diseña) un kernel de acuerdo a todas las especificaciones dadas.
     """
+
+    ## insert all pertinent param_checks : 
+    ##
+
+    H = np.zeroslilke(image)
+
+    if 'low' in kind:
+        H = kernel_lowpass(image, Do=Do, form=form, n=n)
+    elif 'high' in kind:
+        H = kernel_highpass(image, Do=Do, form=form, n=n)
+    elif 'band' in kind:
+        if 'reject' in kind:
+            H = kernel_band_reject(image, Do=Do, w=w, wc1=wc1, wc2=wc2, form=form, n=n)
+        else:
+            H = kernel_band_pass(image, Do=Do, w=w, wc1=wc1, wc2=wc2, form=form, n=n)
+    else:
+        pass
     
-    pass
+    return H
 ##
     
     
-def FiltraGaussiana(image: np.ndarray, sigma: float, kind: str = 'low') -> np.ndarray:
+def __FiltraGaussiana(image: np.ndarray, sigma: float, kind: str = 'low') -> np.ndarray:
     """
-    
+        DO NOT USE THIS FUNCTION !
     """
     kind   = kind.lower()
     _kinds = ['low', 'high', 'lowpass', 'highpass']
