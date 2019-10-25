@@ -235,6 +235,7 @@ def _param_check(kind: str, Do: int) -> bool:
                 'high', 'highpass', 'high pass',
                 'bandpass', 'bandstop', 
                 'band pass', 'band stop',
+                'bandreject', 'band reject',
                 'notchpass', 'notchreject',
                 'notch pass', 'notch reject'
         2.- Que el parámetro `frecuencia de corte`, es decir
@@ -254,6 +255,7 @@ def _param_check(kind: str, Do: int) -> bool:
         'low pass', 'high pass',
         'bandpass', 'bandstop', 
         'band pass', 'band stop',
+        'bandreject', 'band reject',
         'notchpass', 'notchreject',
         'notch pass', 'notch reject'
     ]
@@ -458,7 +460,7 @@ def master_kernel(
     elif 'high' in kind:
         H = kernel_highpass(image, Do=Do, form=form, n=n)
     elif 'band' in kind:
-        if 'reject' in kind:
+        if ('reject' in kind) or ('stop' in kind):
             H = kernel_band_reject(image, Do=Do, w=w, wc1=wc1, wc2=wc2, form=form, n=n)
         else:
             H = kernel_band_pass(image, Do=Do, w=w, wc1=wc1, wc2=wc2, form=form, n=n)
