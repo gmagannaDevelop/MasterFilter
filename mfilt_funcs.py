@@ -6,10 +6,6 @@
 # ### Profesor : Dr. Arturo González Vega
 # ### Alumno : Gustavo Magaña López
 
-# In[3]:
-
-
-
 import copy
 from typing import Tuple, List, NoReturn
 
@@ -427,6 +423,7 @@ def master_kernel(
       wc2: int = None,
      kind: str = 'low',
      form: str = 'ideal',
+   center: Tuple[int] = (0, 0),
         n: int = 1
 ) -> np.ndarray:
     """
@@ -437,6 +434,14 @@ def master_kernel(
             los parámetros de diseño necesarios
         
         Calcula (diseña) un kernel de acuerdo a todas las especificaciones dadas.
+
+        def kernel_notch(img, d0, centro = (0, 0), tipo = 0, pasa = 0, n = 1):
+            Filtro notch. 
+            tipo = 0 para ideal, 1 para gaussiano y cualquier otro valor para butterworth.
+            pasa = 0 para notchreject, 1 para notchpass.
+            centro y radio son los del notch. notch simétrico automático.
+            Especificar n solo para butterworth
+
     """
 
     ## insert all pertinent param_checks : 
@@ -453,8 +458,18 @@ def master_kernel(
             H = kernel_band_reject(image, Do=Do, w=w, wc1=wc1, wc2=wc2, form=form, n=n)
         else:
             H = kernel_band_pass(image, Do=Do, w=w, wc1=wc1, wc2=wc2, form=form, n=n)
-    else:
-        pass
+    elif 'notch' in kind:
+        _forma = 0
+        _pasa  = 0
+        if 'ideal' in form:
+            _forma = 0 
+        elif 'gauss' in form:
+            _forma = 1
+        else:
+            _forma = 2
+        if 'pass' in kind:
+            _pasa = 1
+        H = kernel_notch(image, Do, centro=center, tipo=_forma, pasa=_pasa, n=n)
     
     return H
 ##
